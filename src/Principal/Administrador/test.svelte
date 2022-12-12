@@ -6,6 +6,8 @@
     // SIN EXTRA
     import axios from "axios"
     import Lugar from "../../lugares"
+    import Modal from "../../Componentes/Modal.svelte";
+    import Swal from "sweetalert2"
     
     // RECORDSET INICIAL
     let tieneRegistros = false
@@ -45,6 +47,80 @@
         paginaActual = pagina
         registroInicial = (paginaActual * maxRegsPP) - (maxRegsPP - 1)
         registroFinal = paginaActual * maxRegsPP
+    }
+
+    // BULEANO
+    const cambiarBuleano = async (id_testT,buleanoT) => {
+        try {
+            spinner = true
+            const rs = await axios.post(Lugar.backend+'cambiar_buleano.php',{
+                id_test:id_testT,
+                buleano:buleanoT
+            })
+            spinner = false
+        } catch (e) {}
+    }
+
+    // EDITAR REGISTRO
+    let id_test = 0
+    let texto = ''
+    
+    let entero = 0
+    let modEditarRegistro = false
+    const editarRegistro = (id_testT,textoT,enteroT) => {
+        id_test = id_testT
+        texto = textoT
+        entero = enteroT
+        modEditarRegistro = true
+    }
+
+    let textoValido = true
+    const validarTexto = () => {
+        if ( texto.length > 2 ) {
+            textoValido = true
+        } else {
+            textoValido = false
+        }
+    }
+
+    let enteroValido = true
+    const validarEntero = () => {
+        entero = numeros(entero)
+        if ( texto.length > 2 ) {
+            enteroValido = true
+        } else {
+            enteroValido = false
+        }
+    }
+
+    const resEditarRegistro = async (data) => {
+        texto = texto.trim()
+        modEditarRegistro = false
+        if (data == 'save'){
+            if ( textoValido && enteroValido ) {
+                try {
+                    spinner = true
+                    const rs = await axios.post(Lugar.backend+'actualizar_tests.php', {
+                        id_test: id_test,
+                        texto: texto,
+                        entero: entero
+                    })
+                    spinner = false
+                    main()
+                } catch (e) {}
+            } else {
+                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El largo del texto debe tener al menos 3 caracteres y el entero debe ser mayor a 0.'})
+            }
+        }
+	}
+
+    const numeros = (string) => {
+        let out = '';
+        let filtro = '0123456789';
+        for (let i=0; i<string.length; i++)
+        if (filtro.indexOf(string.charAt(i)) != -1) 
+            out += string.charAt(i);
+        return parseInt(out)
     }
 
     // DEBUG
@@ -106,10 +182,19 @@
                             {#if registro.numero >= registroInicial && registro.numero <= registroFinal}
                                 <tr>
                                     <th scope="row" >{registro.numero}</th>
-                                    <th             ><i class="bi bi-pencil-fill"></i></th>
+                                    <th             >
+                                        <div on:keydown={null} on:click={()=>editarRegistro(registro.id_test,registro.texto,registro.entero)}>
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </div>
+                                    </th>
                                     <td             >{registro.texto}</td>
                                     <td             >{registro.entero}</td>
-                                    <td             >{registro.buleano}</td>
+                                    <td             >
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.buleano}
+                                                on:change={()=>cambiarBuleano(registro.id_test,registro.buleano)}>
+                                        </div>
+                                    </td>
                                 </tr>   
                             {/if}
                         {/each}
@@ -134,6 +219,20 @@
             <button class="btn btn-primary" type="button">Regresar</button>
         </div>
     </div>
+
+    <Modal open={modEditarRegistro} onClosed={(data) => resEditarRegistro(data)}
+        title="Editar registro:" 
+        saveButtonText="Guardar registro" 
+        closeButtonText="Cancelar">
+        <div class="input-group mb-3">
+            <span class="input-group-text">Texto:*</span>
+            <input type="text" class="form-control" bind:value={texto} on:input={validarTexto}>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text">Entero:*</span>
+            <input type="text" class="form-control" bind:value={entero} on:input={validarEntero}>
+        </div>
+    </Modal>
 
     <!-- DEBUG -->
     {#if debug}
