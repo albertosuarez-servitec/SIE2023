@@ -35,7 +35,7 @@
                 if( $cmd === "SELECT" ) { return $stmt->get_result(); } else
                                         { return $exec; }
             } else {
-                if ( count($values, COUNT_RECURSIVE) == 0 && !str_contains($query, 'WHERE')) {
+                if ( count($values, COUNT_RECURSIVE) == 0) {
                     return $connection->query($query);
                 }
             }
