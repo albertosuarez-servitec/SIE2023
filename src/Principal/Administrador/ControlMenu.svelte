@@ -1,6 +1,4 @@
 <script>
-// @ts-nocheck
-
     // LIBRERIAS O COMPONENTES CON VARIABLE EXTRA
     import Spinner from "../../Componentes/Spinner.svelte";
     let spinner = false
@@ -20,15 +18,17 @@
     let registroFinal = 10
     let residuo = 0
     let pagAd = 0
+    let rsRegistros = []
+    
     const cambiarMaxRegsPP = () => {
-        paginas = ( rsRegistros.length / maxRegsPP )
+        paginas = Math.floor( rsRegistros.length / maxRegsPP )
         residuo = ( rsRegistros.length % maxRegsPP )
         if ( residuo > 0 ) {
             pagAd = 1
         } else {
             pagAd = 0
         }
-        paginas = parseInt(paginas) + pagAd
+        paginas = paginas + pagAd
         paginaActual = 1
         registroInicial = 1
         registroFinal = maxRegsPP
@@ -43,7 +43,6 @@
     // RECORDSET INICIAL
     let filtro = ''
     let tieneRegistros = false
-    let rsRegistros = []
     let minimo_orden = 0
     let maximo_orden = 0
     const main = async () => {
@@ -56,14 +55,14 @@
             if ( rs.data.tieneRegistros ) {
                 tieneRegistros = true
                 rsRegistros = Object.values(rs.data.rsRegistros)
-                paginas = ( rsRegistros.length / maxRegsPP )
+                paginas = Math.floor( rsRegistros.length / maxRegsPP )
                 residuo = ( rsRegistros.length % maxRegsPP )
                 if ( residuo > 0 ) {
                     pagAd = 1
                 } else {
                     pagAd = 0
                 }
-                paginas = parseInt(paginas) + pagAd
+                paginas = paginas + pagAd
                 paginaActual = 1
                 registroInicial = 1
                 registroFinal = maxRegsPP
@@ -189,7 +188,6 @@
 	}
 
     // FUNCIONES GENERALES
-
     const limpiarFiltro = () => {
         filtro = ''
         main()
@@ -199,29 +197,27 @@
     const bajar = async (id_menuT,menu_ordenT) => {
         try {
             spinner = true
-            const rs = axios.post(Lugar.backend+'cambiar_orden.php',{
+            const rs = await axios.post(Lugar.backend+'cambiar_orden.php',{
                 id_menu: id_menuT,
                 menu_orden: menu_ordenT,
                 direccion: 'b'
             })
             spinner = false
+            main()
         } catch (e) {}
-        rsRegistros = []
-        main()
     }
 
     const subir = async (id_menuT,menu_ordenT) => {
         try {
             spinner = true
-            const rs = axios.post(Lugar.backend+'cambiar_orden.php',{
+            const rs = await axios.post(Lugar.backend+'cambiar_orden.php',{
                 id_menu: id_menuT,
                 menu_orden: menu_ordenT,
                 direccion: 's'
             })
             spinner = false
+            main()
         } catch (e) {}
-        rsRegistros = []
-        main()
     }
 
     // DEBUG
@@ -264,35 +260,37 @@
                 </div>
             </div>
             <div class="col-6 col-lg-4 col-xxl-3 navs">
-                <div class="input-group mb-3 barra-navPaginas">
-                    <div role="group">
-                        {#if paginaActual != 1}
-                            <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(1)}>{'<<'}</button>
-                        {:else}
-                            <button type="button" class="btn btn-primary" disabled>{'<<'}</button>
-                        {/if}
-                        {#if paginaActual != 1}
-                            <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginaActual-1)}>{'<'}</button>
-                        {:else}
-                            <button type="button" class="btn btn-primary" disabled>{'<'}</button>
-                        {/if}
-                        {#each Array(paginas) as _, i}
-                            {#if i+1 == paginaActual - 1 || i+1 == paginaActual || i+1 == paginaActual + 1}
-                                 <button type="button" class="btn {paginaActual == i+1 ? 'btn-primary' : 'btn-light'}" on:click={()=>cambiarPagina(i+1)}>{i+1}</button>
+                {#if tieneRegistros }
+                    <div class="input-group mb-3 barra-navPaginas">
+                        <div role="group">
+                            {#if paginaActual != 1}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(1)}>{'<<'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'<<'}</button>
                             {/if}
-                        {/each}
-                        {#if paginaActual < paginas}
-                            <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginaActual+1)}>{'>'}</button>
-                        {:else}
-                            <button type="button" class="btn btn-primary" disabled>{'>'}</button>
-                        {/if}
-                        {#if paginaActual < paginas}
-                            <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginas)}>{'>>'}</button>
-                        {:else}
-                            <button type="button" class="btn btn-primary" disabled>{'>>'}</button>
-                        {/if}
+                            {#if paginaActual != 1}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginaActual-1)}>{'<'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'<'}</button>
+                            {/if}
+                            {#each Array(paginas) as _, i}
+                                {#if i+1 == paginaActual - 1 || i+1 == paginaActual || i+1 == paginaActual + 1}
+                                    <button type="button" class="btn {paginaActual == i+1 ? 'btn-primary' : 'btn-light'}" on:click={()=>cambiarPagina(i+1)}>{i+1}</button>
+                                {/if}
+                            {/each}
+                            {#if paginaActual < paginas}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginaActual+1)}>{'>'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'>'}</button>
+                            {/if}
+                            {#if paginaActual < paginas}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginas)}>{'>>'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'>>'}</button>
+                            {/if}
+                        </div>
                     </div>
-                </div>
+                {/if}
             </div>
         </div>
         
@@ -318,19 +316,21 @@
                                     <th scope="row" >{registro.numero}</th>
                                     <th             >
                                         <div >
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <i class="bi bi-pencil-fill text-warning" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
                                                 title="Editar registro" 
                                                 style="font-size:large;"
-                                                on:keydown={null} on:click={()=>editarRegistro(registro.id_menu,registro.menu_nombre)}>
+                                                on:click={()=>editarRegistro(registro.id_menu,registro.menu_nombre)}>
                                             </i>
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <i class="bi bi-trash-fill text-danger" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
                                                 title="Editar registro" 
                                                 style="font-size:large;"
-                                                on:keydown={null} on:click={()=>eliminarRegistro(registro.id_menu,registro.menu_nombre)}>
+                                                on:click={()=>eliminarRegistro(registro.id_menu,registro.menu_nombre)}>
                                             </i>
                                             <i class="bi bi-subtract text-secondary" 
                                                 data-bs-toggle="tooltip" 
@@ -343,12 +343,14 @@
                                     <td             >{registro.menu_nombre}</td>
                                     <td class="orden">
                                         <div class="row">
-                                            <div class="col-6" on:keydown={null} on:click={()=>bajar(registro.id_menu,registro.menu_orden)}>
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <div class="col-6" on:click={()=>bajar(registro.id_menu,registro.menu_orden)}>
                                                 {#if registro.menu_orden != maximo_orden}
                                                      <i style="font-size:1.5rem;" class="text-primary bi bi-caret-down-fill flechaAbajo"></i>
                                                 {/if}
                                             </div>
-                                            <div class="col-6" on:keydown={null} on:click={()=>subir(registro.id_menu,registro.menu_orden)}>
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <div class="col-6" on:click={()=>subir(registro.id_menu,registro.menu_orden)}>
                                                 {#if registro.menu_orden != minimo_orden}
                                                      <i style="font-size:1.5rem;" class="text-primary bi bi-caret-up-fill flechaArriba"></i>
                                                 {/if}
@@ -373,7 +375,7 @@
                             {/if}
                         {/each}
                     {:else}
-                        <td colspan="5">
+                        <td colspan="8">
                             <div class="sin-datos text-center">
                                 <div class="card">
                                     <!-- <img src="..." alt='...'> -->
@@ -427,8 +429,8 @@
     {#if debug}
         <div class="debug">
             <div class="input-group mb-3">
-                <span class="input-group-text">maxRegsPP</span>
-                <input type="text" class="form-control" bind:value={maxRegsPP}>
+                <span class="input-group-text">tieneRegistros</span>
+                <input type="text" class="form-control" bind:value={tieneRegistros}>
             </div>
         </div>
     {/if}

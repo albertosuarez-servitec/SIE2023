@@ -56,8 +56,8 @@
         $query = "SELECT MIN(menu.menu_orden) as minimo_orden, MAX(menu.menu_orden) as maximo_orden FROM menu";
         $resultado = DB::runQuery( $query );
         $db = $resultado->fetch_assoc();
-        $minimo_orden = $db['minimo_orden'];
-        $maximo_orden = $db['maximo_orden'];
+        $minimo_orden = intval($db['minimo_orden']);
+        $maximo_orden = intval($db['maximo_orden']);
     }
     echo json_encode(array("tieneRegistros"=>$tieneRegistros,"rsRegistros"=>$rsRegistros,"minimo_orden"=>$minimo_orden,"maximo_orden"=>$maximo_orden))
 ?>
