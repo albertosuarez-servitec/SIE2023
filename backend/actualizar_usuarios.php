@@ -6,10 +6,11 @@
     $primer_apellido = Data::get('primer_apellido');
     $segundo_apellido = Data::get('segundo_apellido');
     $correo = Data::get('correo');
+    $codigo = Data::get('codigo');
     $query = 
     "UPDATE `usuarios` 
-     SET `nombres` = ?, `primer_apellido` = ?, `segundo_apellido` = ?, `correo` = ?
+     SET `nombres` = ?, `primer_apellido` = ?, `segundo_apellido` = ?, `correo` = ?, `codigo`= ?
      WHERE `id_usuario` = ?";
-    $values = [$nombres, $primer_apellido, $segundo_apellido, $correo, $id_usuario];
+    $values = [$nombres, $primer_apellido, $segundo_apellido, $correo, $id_usuario, $codigo];
     $resultado = DB::runQuery( $query, $values );
 ?>

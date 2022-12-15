@@ -182,7 +182,7 @@
 
     let codigoValido = true
     const validarCodigo = () => {
-        
+        codigo = numerosSinCero(codigo)
         if ( codigo.length = 6 ) {
             codigoValido = true
         } else {
@@ -214,7 +214,8 @@
                         nombres: nombres,
                         primer_apellido: primer_apellido,
                         segundo_apellido: segundo_apellido,
-                        correo: correo
+                        correo: correo,
+                        codigo: codigo
                     })
                     spinner = false
                     main()
@@ -293,6 +294,24 @@
         num = num.toString()
         let numl = num.length
         return zero.repeat(largo-numl)+num
+    }
+
+    const numerosSinCero = (string) => {
+        let out = '';
+        let filtro = '123456789';
+        for (let i=0; i<string.length; i++)
+        if (filtro.indexOf(string.charAt(i)) != -1) 
+            out += string.charAt(i);
+        return out
+    }
+
+    const autogenerar = (cadena, largo) => {
+        let auto = ''
+        while (auto.length < largo) {
+            let char = Math.floor(Math.random() * cadena.length + 1)
+            auto += cadena.charAt(char)
+        }
+        return auto
     }
 
     // LOGEO
@@ -511,6 +530,7 @@
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Código temporal:</strong></span>
             <input type="text" class="form-control" bind:value={codigo} on:imput={validarCodigo}>
+            <button class="btn btn-outline-secondary" on:click={()=>codigo = autogenerar('123456789',6)}>Autogenerar</button>
         </div>
     </Modal>
 
