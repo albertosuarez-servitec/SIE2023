@@ -1,6 +1,7 @@
 import Inicio__SvelteComponent_ from "./Principal/UsuarioFinal/Inicio.svelte";
 import Test__SvelteComponent_ from "./Principal/Administrador/test.svelte";
 import ControlMenu__SvelteComponent_ from "./Principal/Administrador/ControlMenu.svelte";
+import ControlUsuarios__SvelteComponent_ from "./Principal/Administrador/ControlUsuarios.svelte";
 import Error404__SvelteComponent_ from "./Errores/Error404.svelte";
 
 const routes = {
@@ -9,6 +10,7 @@ const routes = {
     // Administrador
     '/test':Test__SvelteComponent_,
     '/ControlMenu':ControlMenu__SvelteComponent_,
+    '/ControlUSuarios':ControlUsuarios__SvelteComponent_,
     // Errores
     '*':Error404__SvelteComponent_
 }

@@ -1,4 +1,5 @@
 <script>
+    // @ts-nocheck
     // LIBRERIAS O COMPONENTES CON VARIABLE EXTRA
     import Spinner from "../../Componentes/Spinner.svelte";
     let spinner = false
@@ -47,7 +48,7 @@
     const main = async () => {
         try {
             spinner = true
-                const rs = await axios.post(Lugar.backend+'control_menu.php',{
+                const rs = await axios.post(Lugar.backend+'control_usuarios.php',{
                     filtro: filtro
                 })
             spinner = false
@@ -65,8 +66,6 @@
                 paginaActual = 1
                 registroInicial = 1
                 registroFinal = maxRegsPP
-                minimo_orden = rs.data.minimo_orden
-                maximo_orden = rs.data.maximo_orden
             }
         } catch (e) {
             //console.log(e)
@@ -74,101 +73,167 @@
     }
     main()
 
-    // ACTIVO
-    const cambiarMenu_Activo = async (id_menuT,menu_activoT) => {
+    // CAMBIAR CLAVE
+    const cambiarCambiar_Clave = async (id_usuarioT, cambiar_claveT) => {
         try {
             spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_menu_activo.php',{
-                id_menu:id_menuT,
-                menu_activo:menu_activoT
+            const rs = await axios.post(Lugar.backend+'cambiar_cambiar_clave.php',{
+                id_usuario: id_usuarioT,
+                cambiar_clave: cambiar_claveT
             })
             spinner = false
         } catch (e) {}
     }
 
-    // MOSTRAR
-    const cambiarMenu_Mostrar = async (id_menuT,menu_mostrarT) => {
+    // BLOQUEO
+    const cambiarBloqueo = async (id_usuarioT, bloqueoT) => {
         try {
             spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_menu_mostrar.php',{
-                id_menu:id_menuT,
-                menu_mostrar:menu_mostrarT
+            const rs = await axios.post(Lugar.backend+'cambiar_bloqueo.php',{
+                id_usuario: id_usuarioT,
+                bloqueo: bloqueoT
             })
             spinner = false
         } catch (e) {}
     }
 
     // AGREGAR REGISTRO
-    let id_menu = 0
-    let menu_nombre = ''
+    let id_usuario = 0
+    let nombres = ''
+    let primer_apellido = ''
+    let segundo_apellido = ''
+    let correo = ''
+    let codigo = ''
     let modAgregarRegistro = false
     const agregarRegistro = () => {
-        menu_nombre = ''
-        menu_nombreValido = false
+        nombres = ''
+        primer_apellido = ''
+        segundo_apellido = ''
+        correo = ''
+        codigo = ''
+        nombresValido = false
+        primer_apellidoValido = false
+        correoValido = false
         modAgregarRegistro = true
     }
 
     const resAgregarRegistro = async (data) => {
-        menu_nombre = menu_nombre.trim()
+        nombres = nombres.trim()
+        primer_apellido = primer_apellido.trim()
+        correo = correo.trim()
         modAgregarRegistro = false
         if (data == 'save'){
-            if ( menu_nombreValido ) {
+            if ( nombresValido && primer_apellidoValido && correoValido ) {
                 try {
                     spinner = true
-                    const rs = await axios.post(Lugar.backend+'agregar_registro_menu.php', {
-                        menu_nombre: menu_nombre
+                    const rs = await axios.post(Lugar.backend+'agregar_registro_usuarios.php', {
+                        nombres: nombres,
+                        primer_apellido: primer_apellido,
+                        segundo_apellido: segundo_apellido,
+                        correo: correo
                     })
                     spinner = false
                     main()
                 } catch (e) {}
             } else {
-                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El largo del nombre del menú debe tener al menos 3 caracteres.'})
+                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El/Los Nombre(s) y el primer apellido deben ser válidos, así como el correo.'})
             }
         }
 	}
 
     // EDITAR REGISTRO
     let modEditarRegistro = false
-    const editarRegistro = (id_menuT,menu_nombreT) => {
-        id_menu = id_menuT
-        menu_nombre = menu_nombreT
+    const editarRegistro = (id_usuarioT,nombresT,primer_apellidoT,segundo_apellidoT,correoT,codigoT) => {
+        id_usuario = id_usuarioT
+        nombres = nombresT
+        primer_apellido = primer_apellidoT
+        segundo_apellido = segundo_apellidoT
+        correo = correoT
+        codigo = codigoT
         modEditarRegistro = true
     }
 
-    let menu_nombreValido = true
-    const validarMenu_Nombre = () => {
-        if ( menu_nombre.length > 2 ) {
-            menu_nombreValido = true
+    let nombresValido = true
+    const validarNombres = () => {
+        if ( nombres.length > 2 ) {
+            nombresValido = true
         } else {
-            menu_nombreValido = false
+            nombresValido = false
+        }
+    }
+
+    let primer_apellidoValido = true
+    const validarPrimer_Apellido = () => {
+        if ( primer_apellido.length > 2 ) {
+            primer_apellidoValido = true
+        } else {
+            primer_apellidoValido = false
+        }
+    }
+
+    let correoValido = true
+    const validarCorreo = () => {
+        if ( correo.length > 2 ) {
+            correoValido = true
+        } else {
+            correoValido = false
+        }
+    }
+
+    let codigoValido = true
+    const validarCodigo = () => {
+        
+        if ( codigo.length = 6 ) {
+            codigoValido = true
+        } else {
+            codigoValido = false
+        }
+    }
+
+    let claveValida = false
+    const validarClave = () => {
+        if ( clave.length > 2 ) {
+            claveValida = true
+        } else {
+            claveValida = false
         }
     }
 
     const resEditarRegistro = async (data) => {
-        menu_nombre = menu_nombre.trim()
+        nombres = nombres.trim()
+        primer_apellido = primer_apellido.trim()
+        segundo_apellido = segundo_apellido.trim()
+        correo = correo.trim()
         modEditarRegistro = false
         if (data == 'save'){
-            if ( menu_nombreValido ) {
+            if ( nombresValido && primer_apellidoValido && correoValido) {
                 try {
                     spinner = true
-                    const rs = await axios.post(Lugar.backend+'actualizar_menu.php', {
-                        id_menu: id_menu,
-                        menu_nombre: menu_nombre
+                    const rs = await axios.post(Lugar.backend+'actualizar_usuarios.php', {
+                        id_usuario: id_usuario,
+                        nombres: nombres,
+                        primer_apellido: primer_apellido,
+                        segundo_apellido: segundo_apellido,
+                        correo: correo
                     })
                     spinner = false
                     main()
                 } catch (e) {}
             } else {
-                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El largo del nombre del menú debe tener al menos 3 caracteres.'})
+                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El/Los Nombre(s), así como el primer apellido deben ser válidos al igual que el correo.'})
             }
         }
 	}
 
     // ELIMINAR REGISTRO
     let modEliminarRegistro = false
-    const eliminarRegistro = async (id_menuT,menu_nombreT) => {
-        id_menu = id_menuT
-        menu_nombre = menu_nombreT
+    const eliminarRegistro = async (id_usuarioT,nombresT,primer_apellidoT,segundo_apellidoT,correoT,codigoT) => {
+        id_usuario = id_usuarioT
+        nombres = nombresT
+        primer_apellido = primer_apellidoT
+        segundo_apellido = segundo_apellidoT
+        correo = correoT
+        codigo = codigoT
         modEliminarRegistro = true
     }
 
@@ -177,12 +242,43 @@
         if (data == 'save'){
             try {
                 spinner = true
-                const rs = await axios.post(Lugar.backend+'eliminar_registro_menu.php',{
-                    id_menu: id_menu
+                const rs = await axios.post(Lugar.backend+'eliminar_registro_usuarios.php',{
+                    id_usuario: id_usuario
                 })
                 spinner = false
             } catch (e) {}
             main()
+        }
+	}
+
+    // CAMBIAR CLAVE
+    let modCambiarClave = false
+    let clave = ''
+    let nombreCompleto = ''
+    const cambiarClave = async (id_usuarioT, nombreCompletoT) => {
+        id_usuario = id_usuarioT
+        nombreCompleto = nombreCompletoT
+        clave = ''
+        claveValida = false
+        modCambiarClave = true
+    }
+
+    const resCambiarClave = async (data) => {
+        modCambiarClave = false
+        if (data == 'save'){
+            if ( claveValida ) {
+                try {
+                    spinner = true
+                    const rs = await axios.post(Lugar.backend+'cambiar_clave.php',{
+                        id_usuario: id_usuario,
+                        clave: clave
+                    })
+                    spinner = false
+                } catch (e) {}
+                main()
+            } else {
+                Swal.fire({icon: 'error',title: 'Error en la clave',text: 'La clave que escribió no es válida.'})
+            }
         }
 	}
 
@@ -192,31 +288,17 @@
         main()
     }
 
-    // ORDEN
-    const bajar = async (id_menuT,menu_ordenT) => {
-        try {
-            spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_orden.php',{
-                id_menu: id_menuT,
-                menu_orden: menu_ordenT,
-                direccion: 'b'
-            })
-            spinner = false
-            main()
-        } catch (e) {}
+    const zeroFill = (num,largo) => {
+        let zero = '0'
+        num = num.toString()
+        let numl = num.length
+        return zero.repeat(largo-numl)+num
     }
 
-    const subir = async (id_menuT,menu_ordenT) => {
-        try {
-            spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_orden.php',{
-                id_menu: id_menuT,
-                menu_orden: menu_ordenT,
-                direccion: 's'
-            })
-            spinner = false
-            main()
-        } catch (e) {}
+    // LOGEO
+    const logeo = (unixTime) => {
+        let date = new Date(unixTime)
+        return zeroFill(date.getDate(),2)+'/'+zeroFill(date.getMonth()+1,2)+'/'+date.getFullYear()+' '+zeroFill(date.getHours(),2)+':'+zeroFill(date.getMinutes(),2)
     }
 
     // DEBUG
@@ -299,12 +381,13 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Acciones</th>
-                        <th scope="col">Menú</th>
-                        <th class="text-center" scope="col">Orden</th>
-                        <th class="text-center" scope="col">Activo</th>
-                        <th class="text-center" scope="col">Mostrar</th>
-                        <th scope="col">Destino</th>
-                        <th scope="col">Ruta</th>
+                        <th scope="col">Nombre completo</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Correo electrónico</th>
+                        <th class="text-center" scope="col">Debe cambiar clave</th>
+                        <th class="text-center" scope="col">Bloqueado</th>
+                        <th class="text-center" scope="col">Código temporal</th>
+                        <th class="text-center" scope="col">Logeo</th>
                     </tr>
                 </thead>
                 <tbody >
@@ -321,7 +404,7 @@
                                                 data-bs-placement="right" 
                                                 title="Editar registro" 
                                                 style="font-size:large;"
-                                                on:click={()=>editarRegistro(registro.id_menu,registro.menu_nombre)}>
+                                                on:click={()=>editarRegistro(registro.id_usuario,registro.nombres,registro.primer_apellido,registro.segundo_apellido,registro.correo,registro.codigo)}>
                                             </i>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <i class="bi bi-trash-fill text-danger" 
@@ -329,47 +412,35 @@
                                                 data-bs-placement="right" 
                                                 title="Editar registro" 
                                                 style="font-size:large;"
-                                                on:click={()=>eliminarRegistro(registro.id_menu,registro.menu_nombre)}>
+                                                on:click={()=>eliminarRegistro(registro.id_usuario,registro.nombres,registro.primer_apellido,registro.segundo_apellido,registro.correo,registro.codigo)}>
                                             </i>
-                                            <i class="bi bi-subtract text-secondary" 
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <i class="bi bi-key text-primary" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
                                                 title="Sin submenú" 
-                                                style="font-size:large;">
+                                                style="font-size:large;"
+                                                on:click={()=>cambiarClave(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
                                             </i>
                                         </div>
                                     </th>
-                                    <td             >{registro.menu_nombre}</td>
-                                    <td class="orden">
-                                        <div class="row">
-                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <div class="col-6" on:click={()=>bajar(registro.id_menu,registro.menu_orden)}>
-                                                {#if registro.menu_orden != maximo_orden}
-                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-down-fill flechaAbajo"></i>
-                                                {/if}
-                                            </div>
-                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <div class="col-6" on:click={()=>subir(registro.id_menu,registro.menu_orden)}>
-                                                {#if registro.menu_orden != minimo_orden}
-                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-up-fill flechaArriba"></i>
-                                                {/if}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="activo">
+                                    <td             >{registro.nombres} {registro.primer_apellido} {registro.segundo_apellido}</td>
+                                    <td             >{registro.usuario}</td>
+                                    <td             >{registro.correo}</td>
+                                    <td class="debeCambiarClave">
                                         <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.menu_activo}
-                                            on:change={()=>cambiarMenu_Activo(registro.id_menu,registro.menu_activo)}>
+                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.cambiar_clave}
+                                            on:change={()=>cambiarCambiar_Clave(registro.id_usuario,registro.cambiar_clave)}>
                                         </div>
                                     </td>
-                                    <td class="mostrar">
+                                    <td class="bloqueado">
                                         <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.menu_mostrar}
-                                            on:change={()=>cambiarMenu_Mostrar(registro.id_menu,registro.menu_mostrar)}>
+                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.bloqueo}
+                                            on:change={()=>cambiarBloqueo(registro.id_usuario,registro.bloqueo)}>
                                         </div>
                                     </td>
-                                    <td             >{registro.menu_destino}</td>
-                                    <td             >{registro.menu_ruta}</td>
+                                    <td class="codigoTemporal text-center">{registro.codigo}</td>
+                                    <td class="text-center">{logeo(registro.hora_unix)}</td>
                                 </tr>   
                             {/if}
                         {/each}
@@ -399,9 +470,21 @@
         title="Agregar registro:" 
         saveButtonText="Guardar registro" 
         closeButtonText="Cancelar">
-        <div class="input-group mb-3">
-            <span class="input-group-text"><strong>Nombre del menú:*</strong></span>
-            <input type="text" class="form-control" bind:value={menu_nombre} on:input={validarMenu_Nombre}>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Nombre(s):*</strong></span>
+            <input type="text" class="form-control" bind:value={nombres} on:input={validarNombres}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Primer apellido:*</strong></span>
+            <input type="text" class="form-control" bind:value={primer_apellido} on:input={validarPrimer_Apellido}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Segundo apellido:*</strong></span>
+            <input type="text" class="form-control" bind:value={segundo_apellido}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Correo electrónico:*</strong></span>
+            <input type="text" class="form-control" bind:value={correo} on:imput={validarCorreo}>
         </div>
     </Modal>
 
@@ -409,9 +492,25 @@
         title="Editar registro:" 
         saveButtonText="Guardar registro" 
         closeButtonText="Cancelar">
-        <div class="input-group mb-3">
-            <span class="input-group-text"><strong>Menú:*</strong></span>
-            <input type="text" class="form-control" bind:value={menu_nombre} on:input={validarMenu_Nombre}>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Nombre(s):*</strong></span>
+            <input type="text" class="form-control" bind:value={nombres} on:input={validarNombres}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Primer apellido:*</strong></span>
+            <input type="text" class="form-control" bind:value={primer_apellido} on:input={validarPrimer_Apellido}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Segundo apellido:*</strong></span>
+            <input type="text" class="form-control" bind:value={segundo_apellido}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Correo electrónico:*</strong></span>
+            <input type="text" class="form-control" bind:value={correo} on:imput={validarCorreo}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Código temporal:</strong></span>
+            <input type="text" class="form-control" bind:value={codigo} on:imput={validarCodigo}>
         </div>
     </Modal>
 
@@ -420,8 +519,18 @@
         saveButtonText="Eliminar registro" 
         closeButtonText="Cancelar">
         <h3 class="text-center">¿Eliminar el siguiente menú?</h3>
-        <p class="text-center text-primary"><strong>{menu_nombre}</strong></p>
+        <p class="text-center text-primary"><strong>{nombres}</strong></p>
         <p class="text-center">Esto no se podrá revertir</p>
+    </Modal>
+
+    <Modal open={modCambiarClave} onClosed={(data) => resCambiarClave(data)}
+        title="Cambiar clave: ({nombreCompleto})" 
+        saveButtonText="Guardar" 
+        closeButtonText="Cancelar">
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Nueva clave:*</strong></span>
+            <input type="text" class="form-control" bind:value={clave} on:input={validarClave}>
+        </div>
     </Modal>
 
     <!-- DEBUG -->
@@ -437,19 +546,13 @@
 </main>
 
 <style>
-    .flechaAbajo {
-        cursor: pointer;
-    }
-    .flechaArriba {
-        cursor: pointer;
-    }
-    .mostrar {
+    .bloqueado {
         width: 100px;
     }
-    .activo {
+    .debeCambiarClave {
         width: 100px;
     }
-    .orden {
+    .codigoTemporal {
         width: 100px;
     }
     .navs {
