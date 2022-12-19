@@ -183,7 +183,10 @@
     let codigoValido = true
     const validarCodigo = () => {
         codigo = numerosSinCero(codigo)
-        if ( codigo.length = 6 ) {
+        if ( codigo.length > 6 ) {
+            codigo = codigo.substring(0,6)
+        }
+        if ( codigo.length == 6 ) {
             codigoValido = true
         } else {
             codigoValido = false
@@ -316,8 +319,12 @@
 
     // LOGEO
     const logeo = (unixTime) => {
-        let date = new Date(unixTime)
-        return zeroFill(date.getDate(),2)+'/'+zeroFill(date.getMonth()+1,2)+'/'+date.getFullYear()+' '+zeroFill(date.getHours(),2)+':'+zeroFill(date.getMinutes(),2)
+        if ( unixTime == 0 ) {
+            return 'Nunca'
+        } else {
+            let date = new Date(unixTime)
+            return zeroFill(date.getDate(),2)+'/'+zeroFill(date.getMonth()+1,2)+'/'+date.getFullYear()+' '+zeroFill(date.getHours(),2)+':'+zeroFill(date.getMinutes(),2)
+        }
     }
 
     // DEBUG
@@ -426,18 +433,10 @@
                                                 on:click={()=>editarRegistro(registro.id_usuario,registro.nombres,registro.primer_apellido,registro.segundo_apellido,registro.correo,registro.codigo)}>
                                             </i>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <i class="bi bi-trash-fill text-danger" 
-                                                data-bs-toggle="tooltip" 
-                                                data-bs-placement="right" 
-                                                title="Editar registro" 
-                                                style="font-size:large;"
-                                                on:click={()=>eliminarRegistro(registro.id_usuario,registro.nombres,registro.primer_apellido,registro.segundo_apellido,registro.correo,registro.codigo)}>
-                                            </i>
-                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <i class="bi bi-key text-primary" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
-                                                title="Sin submenú" 
+                                                title="Cambiar clave de acceso" 
                                                 style="font-size:large;"
                                                 on:click={()=>cambiarClave(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
                                             </i>
@@ -503,7 +502,7 @@
         </div>
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Correo electrónico:*</strong></span>
-            <input type="text" class="form-control" bind:value={correo} on:imput={validarCorreo}>
+            <input type="text" class="form-control" bind:value={correo} on:input={validarCorreo}>
         </div>
     </Modal>
 
@@ -513,11 +512,11 @@
         closeButtonText="Cancelar">
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Nombre(s):*</strong></span>
-            <input type="text" class="form-control" bind:value={nombres} on:input={validarNombres}>
+            <input type="text" class="form-control {nombresValido ? 'is-valid' : 'is-invalid'}" bind:value={nombres} on:input={validarNombres}>
         </div>
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Primer apellido:*</strong></span>
-            <input type="text" class="form-control" bind:value={primer_apellido} on:input={validarPrimer_Apellido}>
+            <input type="text" class="form-control {primer_apellidoValido ? 'is-valid' : 'is-invalid'}" bind:value={primer_apellido} on:input={validarPrimer_Apellido}>
         </div>
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Segundo apellido:*</strong></span>
@@ -525,11 +524,11 @@
         </div>
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Correo electrónico:*</strong></span>
-            <input type="text" class="form-control" bind:value={correo} on:imput={validarCorreo}>
+            <input type="text" class="form-control {correoValido ? 'is-valid' : 'is-invalid'}" bind:value={correo} on:input={validarCorreo}>
         </div>
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Código temporal:</strong></span>
-            <input type="text" class="form-control" bind:value={codigo} on:imput={validarCodigo}>
+            <input type="text" class="form-control {codigoValido ? 'is-valid' : 'is-invalid'}" bind:value={codigo} on:input={validarCodigo}>
             <button class="btn btn-outline-secondary" on:click={()=>codigo = autogenerar('123456789',6)}>Autogenerar</button>
         </div>
     </Modal>
@@ -557,8 +556,8 @@
     {#if debug}
         <div class="debug">
             <div class="input-group mb-3">
-                <span class="input-group-text">tieneRegistros</span>
-                <input type="text" class="form-control" bind:value={tieneRegistros}>
+                <span class="input-group-text">codigoValido</span>
+                <input type="text" class="form-control" bind:value={codigoValido}>
             </div>
         </div>
     {/if}
