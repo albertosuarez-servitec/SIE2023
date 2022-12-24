@@ -1,218 +1,123 @@
 <script>
-  import {link, push, location} from 'svelte-spa-router' 
-  import axios from 'axios';
-  import Swal from 'sweetalert2'
+    // @ts-nocheck
+    // LIBRERIAS O COMPONENTES CON VARIABLE EXTRA
+    import Spinner from "../Componentes/Spinner.svelte";
+    let spinner = false
 
-  let usuario_correo = ''
-  let usuario_clave= ''
-  let correoValido = false
-  let claveValida = false
-  let usuarioActual = ''
-  let idUsuario = 0
+    // LIBRERIAS O COMPONENTES SIN VARIABLE EXTRA
+    import { push } from 'svelte-spa-router'
+    import Lugar from "../lugares"
+    import Modal from "../Componentes/Modal.svelte";
+    import Swal from "sweetalert2"
 
-  const login = async () => {
-    const res = await axios.post('http://localhost/sie2023/backend/login.php',{
-      correo_existente: usuario_correo,
-      password_correcto: usuario_clave
-    })
-  }
-// para el correo
-  export const validarCorreo = (string) => {
-        let out = '';
-        let filtro = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_@.-';
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out += string.charAt(i);
-        return out
+    // CAMBIO EN MENÚ
+    let ubicacion = window.location.hash
+    const cambiar = async (sitio) => {
+        await push(sitio)
+        ubicacion = window.location.hash
     }
 
-    export function contarEspeciales(string){
-        let out = 0;
-        let filtro = '@.';
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out++
-        return out
-    }
-// para la contraseña
-  
-
-  export const letrasNumerosSignos = (string) => {
-        let out = '';
-        let filtro = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890#$%&.-_{}[]*@';
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out += string.charAt(i);
-        return out
+    // ENTRAR
+    let modEntrar = false
+    let correo = ''
+    let clave = ''
+    const entrar = async () => {
+        modEntrar = true
     }
 
-    export const contarAltas = (string) =>{
-        let out = 0;
-        let filtro = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out++
-        return out
-    }
+    const resModEntrar = async (data) => {
+        correo = correo.trim()
+        modAgregarRegistro = false
+        if (data == 'save'){
+        } else {
+            Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El/Los Nombre(s) y el primer apellido deben ser válidos, así como el correo.'})
+        }
+	}
 
-    export const contarBajas = (string) => {
-        let out = 0;
-        let filtro = 'abcdefghijklmnopqrstuvwxyz'
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out++;
-        return out
-    }
-
-    export const contarNumeros = (string) => {
-        let out = 0;
-        let filtro = '1234567890';
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out++;
-        return out
-    }
-
-    export const contarSignos = (string) => {
-        let out = 0;
-        let filtro = '#$%&.-_{}[]*@.';
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out++;
-        return out
-    }
-
-// correo
-  const revisarCorreo = () =>{
-    usuario_correo=usuario_correo.trim()
-        usuario_correo=usuario_correo.toLowerCase()
-        usuario_correo=validarCorreo(usuario_correo)
-        if (contarEspeciales(usuario_correo)>1) {
+    let correoValido = false
+    const validarCorreo = async () => {
+        correo = correo.toLowerCase()
+        if ( /^\w+([\.\-_]?\w+)*@\w+\.\w+(\.\w+)*$/.test(correo) ) {
             correoValido = true
         } else {
             correoValido = false
         }
-  }
-
-  const alertaCorreo = () => {
-        if ( !correoValido && usuario_correo.length > 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'El correo no es válido',
-                footer: 'Revísalo para poder ingresar.'
-            })
-        }
-    }
-// clave
-    const revisarClave = () =>{
-        usuario_clave = usuario_clave.trim()
-          usuario_clave = letrasNumerosSignos(usuario_clave)
-          if (usuario_clave.length > 0 && usuario_clave.length < 8) {
-              claveValida = false
-          } else if (usuario_clave.length > 7) {
-              if (contarAltas(usuario_clave)>0 && contarBajas(usuario_clave)>0 && contarNumeros(usuario_clave)>0 && contarSignos(usuario_clave)>0) {
-                  claveValida = true
-              }
-          }
     }
 
-    const alertaClave = () => {
-        if ( !claveValida && usuario_clave.length > 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'La contraseña no es válida, al menos debe tener 8 caracteres usando una mayúscula, una minúscula, un número y un símbolo de estos: #$%&.-_{}[]*@.',
-                footer: 'Revísala para poder ingresar.'
-            })
+    let claveValida = false
+    const validarClave = async (valor) => {
+        if ( /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$/.test(valor) ) {
+            claveValida = true
+        } else {
+            claveValida = false
         }
     }
 
-
-
-  
-
+     // DEBUG
+     let debug = true
 </script>
 
 <main>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#!">ENCRyM</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#!navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <button type="button" class="btn btn-light { $location == '/' ? 'active' : ''}" on:click={()=>push('/')}>Inicio</button>
-              </li>
-              <li class="nav-item">
-                <!-- <button type="button" class="btn btn-light" on:click={()=>push('/')}>Acerca de...</button> -->
-               <!-- Boton de acerca de-->
-                  <button type="button" class="btn btn-light acerca" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Acerca de...
-                  </button>
-
-                  <!-- Modal acerca de-->
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel">Acerca del sistema</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          Este sistema es administrado por la Escuela Nacional de Conservación, Restauración y Museografía “Manuel del Castillo Negrete” (ENCRyM). Algunos derechos reservados 2022.
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cerrar</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-              </li>
+                <li class="nav-item">
+                    <button class="btn btn-outline-success {ubicacion == '#/' ? 'active' : ''}" on:click={()=>cambiar('/')}>Inicio</button>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-outline-success {ubicacion == '#/Acerca' ? 'active' : ''}" on:click={()=>cambiar('/Acerca')}>Acerca de este software</button>
+                </li>
             </ul>
             <form class="d-flex">
-              <!-- Boton modal de entrar -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-               Entrar
-              </button>
-
-              <!-- Modal entrar-->
-              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="staticBackdropLabel">Inicio de sesion</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Correo ENCRyM</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" bind:value={usuario_correo} on:input={revisarCorreo} on:change={alertaCorreo}>
-                        <div id="emailHelp" class="form-text">Recuerda Ingrear con el correo institucional.</div>
-                      </div>
-                      <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="exampleInputPassword1" bind:value={usuario_clave} on:input={revisarClave} on:change={alertaClave}>
-                      </div>
-                      <a href="#!">¿Has olvidado tu contraseña?</a>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                      <button type="button" class="btn btn-primary " on:click={login} >Entrar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                <button class="btn btn-outline-success" on:click={entrar}>Entrar</button>
             </form>
-          </div>
+            </div>
         </div>
-      </nav>
+    </nav>
+
+    <!-- MODALES -->
+    <Modal open={modEntrar} onClosed={(data) => resModEntrar(data)}
+        title="Entrar al SIENCRyM:" 
+        saveButtonText="Registrarse" 
+        closeButtonText="Cancelar">
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Correo:*</strong></span>
+            <input type="text" class="form-control {correoValido ? 'is-valid' : 'is-invalid'}" bind:value={correo} on:input={validarCorreo}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Clave:*</strong></span>
+            <input type="text" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)}>
+        </div>
+    </Modal>
+
+    {#if debug}
+        <div class="debug">
+            <div class="input-group mb-1">
+                <span class="input-group-text">correoValido</span><input type="text" class="form-control" bind:value={correoValido}>
+            </div>
+            <div class="input-group mb-1">
+                <span class="input-group-text">claveValida</span><input type="text" class="form-control" bind:value={claveValida}>
+            </div>
+        </div>
+    {/if}
 </main>
 
 <style>
-.acerca{
-  margin-left: 4px;
-}
+    .nav-item {
+        margin: 0 3px;
+    }
+    /* DEBUG */
+    .debug {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+    .debug .input-group {
+        margin-bottom: 0px !important;
+    }
 </style>
