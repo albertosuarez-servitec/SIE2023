@@ -229,32 +229,6 @@
         }
 	}
 
-    // ELIMINAR REGISTRO
-    let modEliminarRegistro = false
-    const eliminarRegistro = async (id_usuarioT,nombresT,primer_apellidoT,segundo_apellidoT,correoT,codigoT) => {
-        id_usuario = id_usuarioT
-        nombres = nombresT
-        primer_apellido = primer_apellidoT
-        segundo_apellido = segundo_apellidoT
-        correo = correoT
-        codigo = codigoT
-        modEliminarRegistro = true
-    }
-
-    const resEliminarRegistro = async (data) => {
-        modEliminarRegistro = false
-        if (data == 'save'){
-            try {
-                spinner = true
-                const rs = await axios.post(Lugar.backend+'eliminar_registro_usuarios.php',{
-                    id_usuario: id_usuario
-                })
-                spinner = false
-            } catch (e) {}
-            main()
-        }
-	}
-
     // CAMBIAR CLAVE
     let modCambiarClave = false
     let clave = ''
@@ -273,9 +247,9 @@
             if ( claveValida ) {
                 try {
                     spinner = true
-                    const rs = await axios.post(Lugar.backend+'cambiar_clave.php',{
+                    const rs = await axios.post(Lugar.backend+'cambiar_clave_usuario.php',{
                         id_usuario: id_usuario,
-                        clave: clave
+                        usuario_clave: clave
                     })
                     spinner = false
                 } catch (e) {}
@@ -283,6 +257,28 @@
             } else {
                 Swal.fire({icon: 'error',title: 'Error en la clave',text: 'La clave que escribió no es válida.'})
             }
+        }
+	}
+
+    // ELIMINAR USUARIO
+    let modEliminarUsuario = false
+    const eliminarUsuario = async (id_usuarioT, nombreCompletoT) => {
+        id_usuario = id_usuarioT
+        nombreCompleto = nombreCompletoT
+        modEliminarUsuario = true
+    }
+
+    const resEliminarUsuario = async (data) => {
+        modEliminarUsuario = false
+        if (data == 'save'){
+            try {
+                spinner = true
+                const rs = await axios.post(Lugar.backend+'eliminar_registro_usuarios.php',{
+                    id_usuario: id_usuario
+                })
+                spinner = false
+            } catch (e) {}
+            main()
         }
 	}
 
@@ -328,7 +324,7 @@
     }
 
     // DEBUG
-    let debug = true
+    let debug = false
 
 </script>
 
@@ -440,6 +436,14 @@
                                                 style="font-size:large;"
                                                 on:click={()=>cambiarClave(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
                                             </i>
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <i class="bi bi-trash text-danger" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="right" 
+                                                title="Eliminar usuario definitivamente" 
+                                                style="font-size:large;"
+                                                on:click={()=>eliminarUsuario(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
+                                            </i>
                                         </div>
                                     </th>
                                     <td             >{registro.nombres} {registro.primer_apellido} {registro.segundo_apellido}</td>
@@ -533,15 +537,6 @@
         </div>
     </Modal>
 
-    <Modal open={modEliminarRegistro} onClosed={(data) => resEliminarRegistro(data)}
-        title="Eliminar registro:" 
-        saveButtonText="Eliminar registro" 
-        closeButtonText="Cancelar">
-        <h3 class="text-center">¿Eliminar el siguiente menú?</h3>
-        <p class="text-center text-primary"><strong>{nombres}</strong></p>
-        <p class="text-center">Esto no se podrá revertir</p>
-    </Modal>
-
     <Modal open={modCambiarClave} onClosed={(data) => resCambiarClave(data)}
         title="Cambiar clave: ({nombreCompleto})" 
         saveButtonText="Guardar" 
@@ -549,6 +544,15 @@
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Nueva clave:*</strong></span>
             <input type="text" class="form-control" bind:value={clave} on:input={validarClave}>
+        </div>
+    </Modal>
+    
+    <Modal open={modEliminarUsuario} onClosed={(data) => resEliminarUsuario(data)}
+        title="Eliminar usuario: ({nombreCompleto})" 
+        saveButtonText="Eliminar definitivamente" 
+        closeButtonText="Cancelar">
+        <div class="d-flex justify-content-center">
+            <h1 class="input-group-text"><strong>ESTO NO SE PUEDE DESHACER</strong></h1>
         </div>
     </Modal>
 

@@ -1,0 +1,99 @@
+:root {
+    /* Bootstrap */
+    --primary: #0275d8;
+    --success: #5cb85c;
+    --info: #5bc0de;
+    --warning: #f0ad4e;
+    --danger: #d9534f;
+    --dark: #292b2c;
+    --light: #f7f7f7;
+    --purple: #6f42c1;
+    /* Blue */
+    --blue-100: #cfe2ff;
+    --blue-200: #9ec5fe;
+    --blue-300: #6ea8fe;
+    --blue-400: #3d8bfd;
+    --blue-500: #0d6efd;
+    --blue-600: #0a58ca;
+    --blue-700: #084298;
+    --blue-800: #052c65;
+    --blue-900: #031633;
+    /* Amarillo */
+    --amarillo-1: #fefaca;
+    --amarillo-2: #fbf583;
+    --amarillo-3: #fef102;
+    --amarillo-4: #cbbe00;
+    --amarillo-5: #a19600;
+    /* Amarillo-Anaranjado */
+    --amarillo-anaranjado-1: #ffe3cb;
+    --amarillo-anaranjado-2: #fcc777;
+    --amarillo-anaranjado-3: #f8a51b;
+    --amarillo-anaranjado-4: #c18210;
+    --amarillo-anaranjado-5: #9b6702;
+    /* Anaranjado */
+    --anaranjado-1: #fbdcc8;
+    --anaranjado-2: #f5a872;
+    --anaranjado-3: #f58225;
+    --anaranjado-4: #c26919;
+    --anaranjado-5: #994f06;
+    /* Azul */
+    --azul-1: #aec5e4;
+    --azul-2: #5c88c5;
+    --azul-3: #0465b2;
+    --azul-4: #004e8c;
+    --azul-5: #013d73;
+    /* Azul-Morado */
+    --azul-morado-1: #8b92c6;
+    --azul-morado-2: #595fbd;
+    --azul-morado-3: #21409a;
+    --azul-morado-4: #172e7c;
+    --azul-morado-5: #081c63;
+    /* Rojo */
+    --rojo-1: #fad2d0;
+    --rojo-2: #f5796d;
+    --rojo-3: #ee1c25;
+    --rojo-4: #b81118;
+    --rojo-5: #8f0407;
+}
+/* Amarillo */
+.bg-amarillo-5 { background-color: var(--amarillo-5); }
+.bg-amarillo-4 { background-color: var(--amarillo-4); }
+.bg-amarillo-3 { background-color: var(--amarillo-3); }
+.bg-amarillo-2 { background-color: var(--amarillo-2); }
+.bg-amarillo-1 { background-color: var(--amarillo-1); }
+/* Amarillo-Anaranjado */
+.bg-amarillo-anaranjado-5 { background-color: var(--amarillo-anaranjado-5); }
+.bg-amarillo-anaranjado-4 { background-color: var(--amarillo-anaranjado-4); }
+.bg-amarillo-anaranjado-3 { background-color: var(--amarillo-anaranjado-3); }
+.bg-amarillo-anaranjado-2 { background-color: var(--amarillo-anaranjado-2); }
+.bg-amarillo-anaranjado-1 { background-color: var(--amarillo-anaranjado-1); }
+/* Anaranjado */
+.bg-anaranjado-5 { background-color: var(--anaranjado-5); }
+.bg-anaranjado-4 { background-color: var(--anaranjado-4); }
+.bg-anaranjado-3 { background-color: var(--anaranjado-3); }
+.bg-anaranjado-2 { background-color: var(--anaranjado-2); }
+.bg-anaranjado-1 { background-color: var(--anaranjado-1); }
+/* Azul */
+.bg-azul-5 { background-color: var(--azul-5); }
+.bg-azul-4 { background-color: var(--azul-4); }
+.bg-azul-3 { background-color: var(--azul-3); }
+.bg-azul-2 { background-color: var(--azul-2); }
+.bg-azul-1 { background-color: var(--azul-1); }
+/* Rojo */
+.bg-rojo-5 { background-color: var(--rojo-5); }
+.bg-rojo-4 { background-color: var(--rojo-4); }
+.bg-rojo-3 { background-color: var(--rojo-3); }
+.bg-rojo-2 { background-color: var(--rojo-2); }
+.bg-rojo-1 { background-color: var(--rojo-1); }
+
+.btn-rojo-5 {
+    background-color: var(--rojo-5) !important;
+    color: white !important;
+}
+
+body {
+    overflow-x:hidden;
+}
+.cursor {
+    cursor: pointer;
+}

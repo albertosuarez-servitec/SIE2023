@@ -14,6 +14,7 @@
     export let saveButtonText = "Save changes"
     export let denyButton = "off"
     export let denyButtonText = "Deny"
+    export let modalSize = "modal-md" // modal-sm, modal-md, modal-lg, modal-xl
 
     export const closeModal = () => {
         dispatch('modalClose')
@@ -30,9 +31,9 @@
   
   {#if open}
     <div class="modal modal-dialog-scrollable" id="sampleModal" tabindex="-1" role="dialog" aria-labelledby="sampleModalLabel" aria-hidden={false}>
-      <div class="modal-dialog" role="document" in:fly={{ y: -50, duration: 300 }} out:fly={{ y: -50, duration: 300, easing: quintOut }}>
+      <div class="modal-dialog {modalSize}" role="document" in:fly={{ y: -50, duration: 300 }} out:fly={{ y: -50, duration: 300, easing: quintOut }}>
         <div class="modal-content">
-          <div class="modal-header bg-primary text-light">
+          <div class="modal-header bg-azul-5 text-light">
             <h5 class="modal-title" id="sampleModalLabel">{title}</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close" on:click={() => modalClose('close')}>
               <span aria-hidden="true">&times;</span>
@@ -41,7 +42,7 @@
           <div class="modal-body">
             <slot></slot>
           </div>
-          <div class="modal-footer bg-secondary">
+          <div class="modal-footer bg-azul-5">
             {#if cancelButton == "on"}
               <button type="button" class="btn btn-light" data-dismiss="modal" on:click={() => modalClose('cancel')}>{closeButtonText}</button>
             {/if}
