@@ -30,7 +30,7 @@
         correo = correo.trim()
         modEntrar = false
         if ( data == 'save' && correo != '' && clave != '' ) {
-
+            // Logearse
         }
 	}
 
@@ -38,7 +38,7 @@
     let codigo = ''
     let codigoValido = false
     let modRecuperarClave = false
-    let pasoRecuperarClave = 3
+    let pasoRecuperarClave = 1
     let claveNueva1 = ''
     let claveNueva2 = ''
     let claveNueva1Valida = false
@@ -209,7 +209,7 @@
 
 <main>
 
-    <nav class="navbar navbar-expand-lg bg-amarillo-1">
+    <nav class="navbar navbar-expand-lg bg-azul-1">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -217,15 +217,13 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <button class="btn {ubicacion == '#/' ? 'active' : ''}" on:click={()=>cambiar('/')}>Inicio</button>
+                    <button class="btn {ubicacion == '#/' || ubicacion == '' ? 'active' : ''}" on:click={()=>cambiar('/')}>Inicio</button>
                 </li>
                 <li class="nav-item">
                     <button class="btn {ubicacion == '#/Acerca' ? 'active' : ''}" on:click={()=>cambiar('/Acerca')}>Acerca de este software</button>
                 </li>
             </ul>
-            <form class="d-flex">
-                <button class="btn entrar" on:click={entrar}>Entrar</button>
-            </form>
+            <button class="btn entrar" on:click={entrar}>Entrar</button>
             </div>
         </div>
     </nav>

@@ -30,6 +30,12 @@
     --amarillo-anaranjado-3: #f8a51b;
     --amarillo-anaranjado-4: #c18210;
     --amarillo-anaranjado-5: #9b6702;
+    /* Amarillo-Verdoso */
+    --amarillo-verdoso-1: #e1edd7;
+    --amarillo-verdoso-2: #add68a;
+    --amarillo-verdoso-3: #6fc040;
+    --amarillo-verdoso-4: #569834;
+    --amarillo-verdoso-5: #3f7829;
     /* Anaranjado */
     --anaranjado-1: #fbdcc8;
     --anaranjado-2: #f5a872;
@@ -48,12 +54,42 @@
     --azul-morado-3: #21409a;
     --azul-morado-4: #172e7c;
     --azul-morado-5: #081c63;
+    /* Azul-Verdoso */
+    --azul-verdoso-1: #bce4e6;
+    --azul-verdoso-2: #56c4c5;
+    --azul-verdoso-3: #00acac;
+    --azul-verdoso-4: #018989;
+    --azul-verdoso-5: #006e6f;
+    /* Morado */
+    --morado-1: #b8add5;
+    --morado-2: #7e6aaf;
+    --morado-3: #592f93;
+    --morado-4: #491d76;
+    --morado-5: #38085c;
+    /* Purpura */
+    --purpura-1: #e0cde3;
+    --purpura-2: #bd7cb4;
+    --purpura-3: #a3218e;
+    --purpura-4: #810d70;
+    --purpura-5: #690158;
     /* Rojo */
     --rojo-1: #fad2d0;
     --rojo-2: #f5796d;
     --rojo-3: #ee1c25;
     --rojo-4: #b81118;
     --rojo-5: #8f0407;
+    /* Rojo-Anaranjado */
+    --rojo-anaranjado-1: #fdcfc0;
+    --rojo-anaranjado-2: #f58d74;
+    --rojo-anaranjado-3: #ed403c;
+    --rojo-anaranjado-4: #bb302d;
+    --rojo-anaranjado-5: #972d1d;
+    /* Verde */
+    --verde-1: #c0dfd0;
+    --verde-2: #64c195;
+    --verde-3: #03a45e;
+    --verde-4: #00864b;
+    --verde-5: #006c3b;
 }
 /* Amarillo */
 .bg-amarillo-5 { background-color: var(--amarillo-5); }
@@ -79,6 +115,12 @@
 .bg-azul-3 { background-color: var(--azul-3); }
 .bg-azul-2 { background-color: var(--azul-2); }
 .bg-azul-1 { background-color: var(--azul-1); }
+/* Morado */
+.bg-morado-5 { background-color: var(--morado-5);}
+.bg-morado-4 { background-color: var(--morado-4);}
+.bg-morado-3 { background-color: var(--morado-3);}
+.bg-morado-2 { background-color: var(--morado-2);}
+.bg-morado-1 { background-color: var(--morado-1);}
 /* Rojo */
 .bg-rojo-5 { background-color: var(--rojo-5); }
 .bg-rojo-4 { background-color: var(--rojo-4); }

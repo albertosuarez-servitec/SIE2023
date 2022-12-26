@@ -3,10 +3,42 @@
 </script>
 
 <main class="container-fluid">
-    <img class="logo-img" src="/encrym_logo_blanco.png" alt="">
+    <div class="logos">
+        <div class="logos-left">
+            <img class="logo-img" src="/encrym_logo_blanco.png" alt="">
+        </div>
+        <div class="logos-center">
+            <h1 class="text-light">SIENCRyM</h1>
+        </div>
+        <div class="logos-right">
+            <img class="logo-img" src="/inah_logo_blanco.png" alt="">
+        </div>
+    </div>
 </main>
 
 <style>
+    .logos {
+        display: grid;
+        grid-template-columns: 1fr, 1fr, 1fr;
+    }
+    .logos-left {
+        grid-row: 1 / 1;
+        grid-column: 1 / 1;
+        text-align: left;
+    }
+    .logos-center {
+        grid-row: 1 / 1;
+        grid-column: 2 / 2;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .logos-right {
+        grid-row: 1 / 1;
+        grid-column: 3 / 3;
+        text-align: right;
+    }
     .container-fluid {
         padding-left: 5px;
     }
