@@ -22,6 +22,7 @@
     let modEntrar = false
     let correo = ''
     let clave = ''
+    let verClave = false
     const entrar = async () => {
         modEntrar = true
     }
@@ -29,8 +30,29 @@
     const resModEntrar = async (data) => {
         correo = correo.trim()
         modEntrar = false
-        if ( data == 'save' && correo != '' && clave != '' ) {
-            // Logearse
+        if ( data == 'save' && correoValido && claveValida ) {
+            try {
+                spinner = true
+                const rs = await axios.post(Lugar.backend+'login.php',{
+                    correo: correo,
+                    usuario_clave: clave
+                })
+                spinner = false
+                if ( rs.data.correo_existente ) {
+                    if ( rs.data.clave_correcta ) {
+                        if ( rs.data.usuario_bloqueado ) {
+                            Swal.fire({icon: 'error',title: 'Datos erroneos',text: 'Algo no coincide, por favor revisa de nuevo.'})
+                        } else {
+                            Swal.fire({icon: 'success',title: 'Datos correctos',text: 'Acceso concedido, si pasa algún tiempo sin hacer algo se cerrará la sesión.'})
+                            
+                        }
+                    } else {
+                        Swal.fire({icon: 'error',title: 'Datos erroneos',text: 'Algo no coincide, por favor revisa de nuevo.'})
+                    }
+                } else {
+                    Swal.fire({icon: 'error',title: 'Datos erroneos',text: 'Algo no coincide, por favor revisa de nuevo.'})
+                }
+            } catch (e) {}
         }
 	}
 
@@ -103,6 +125,15 @@
         } catch (e) {}
     }
 
+    const validarClave = async () => {
+        clave = clave.trim()
+        if ( contarAltas(clave)>0 && contarBajas(clave)>0 && contarNumeros(clave)>0 && contarEspeciales(clave)>0 && clave.length>7 ) {
+            claveValida =  true
+        } else {
+            claveValida = false
+        }
+    }
+
     const validarClaveNueva1 = async () => {
         claveNueva1 = claveNueva1.trim()
         if ( contarAltas(claveNueva1)>0 && contarBajas(claveNueva1)>0 && contarNumeros(claveNueva1)>0 && contarEspeciales(claveNueva1)>0 && claveNueva1.length>7 ) {
@@ -158,13 +189,13 @@
     }
 
     let claveValida = false
-    const validarClave = async (valor) => {
-        if ( /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$/.test(valor) ) {
-            claveValida = true
-        } else {
-            claveValida = false
-        }
-    }
+    // const validarClave = async (valor) => {
+    //     if ( /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$/.test(valor) ) {
+    //         claveValida = true
+    //     } else {
+    //         claveValida = false
+    //     }
+    // }
 
     // OTRAS FUNCIONES
     const contarAltas = (string) =>{
@@ -204,7 +235,7 @@
     }
 
     // DEBUG
-    let debug = false
+    let debug = true
 </script>
 
 <main>
@@ -231,7 +262,7 @@
     <!-- MODALES -->
     <Modal open={modEntrar} onClosed={(data) => resModEntrar(data)}
         title="Entrar al SIENCRyM:" 
-        saveButtonText="Registrarse" 
+        saveButtonText="Acceder al sistema" 
         closeButtonText="Cancelar">
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Correo:*</strong></span>
@@ -239,7 +270,12 @@
         </div>
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Clave:*</strong></span>
-            <input type="text" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)}>
+            {#if verClave}
+                <input type="text" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)}>
+            {:else}
+                <input type="password" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)}>
+            {/if}
+            <button class="btn btn-outline-secondary" on:click={()=>verClave = !verClave}><i class="bi {verClave ? 'bi-eye-fill' : 'bi-eye-fill'} {verClave ? 'text-danger' : 'text-success'}"></i></button>
         </div>
         <div class="d-grid gap-2">
             <button class="btn btn-warning" on:click={recuperarClave}>Recuperar contraseña</button>
@@ -274,7 +310,7 @@
                         {:else}
                              <input type="password" class="form-control" bind:value={claveNueva1} on:input={validarClaveNueva1}>
                         {/if}
-                        <button class="btn btn-outline-secondary" on:click={()=>verClaveNueva1 = !verClaveNueva1}><i class="bi {verClaveNueva1 ? 'bi-eye-fill' : 'bi-eye-slash-fill'} {verClaveNueva1 ? 'text-danger' : 'text-success'}"></i></button>
+                        <button class="btn btn-outline-secondary" on:click={()=>verClaveNueva1 = !verClaveNueva1}><i class="bi {verClaveNueva1 ? 'bi-eye-fill' : 'bi-eye-fill'} {verClaveNueva1 ? 'text-danger' : 'text-success'}"></i></button>
                     </div>
                 </div>
                 <div class="col-6">
@@ -285,7 +321,7 @@
                         {:else}
                             <input type="password" class="form-control" bind:value={claveNueva2} on:input={validarClaveNueva2}>
                         {/if}
-                        <button class="btn btn-outline-secondary" on:click={()=>verClaveNueva2 = !verClaveNueva2}><i class="bi {verClaveNueva2 ? 'bi-eye-fill' : 'bi-eye-slash-fill'} {verClaveNueva2 ? 'text-danger' : 'text-success'}"></i></button>
+                        <button class="btn btn-outline-secondary" on:click={()=>verClaveNueva2 = !verClaveNueva2}><i class="bi {verClaveNueva2 ? 'bi-eye-fill' : 'bi-eye-fill'} {verClaveNueva2 ? 'text-danger' : 'text-success'}"></i></button>
                     </div>
                 </div>
             </div>
@@ -327,10 +363,7 @@
     {#if debug}
         <div class="debug">
             <div class="input-group mb-1">
-                <span class="input-group-text">correoValido</span><input type="text" class="form-control" bind:value={correoValido}>
-            </div>
-            <div class="input-group mb-1">
-                <span class="input-group-text">codigoValido</span><input type="text" class="form-control" bind:value={codigoValido}>
+                <span class="input-group-text">claveValida</span><input type="text" class="form-control" bind:value={claveValida}>
             </div>
         </div>
     {/if}
