@@ -11,6 +11,31 @@
     import Swal from "sweetalert2"
     import axios from "axios";
 
+    // SESIÓN ACTIVA
+    let usuarioActual_nombre = ''
+    let usuarioActual_id = ''
+    let enSesion = false
+    const sesion = async () => {
+        if ( !(sessionStorage.getItem( 'token' ) === null )) {
+            try {
+                spinner = true
+                const rs = await axios.post(Lugar.backend+'revisar_sesion.php',{
+                    token: sessionStorage.getItem( 'token' )
+                })
+                spinner = false
+            
+                if ( rs.data.en_sesion_previa ) {
+                    usuarioActual_nombre = sessionStorage.getItem( 'nombreCompleto' )
+                    usuarioActual_id = sessionStorage.getItem( 'id_usuario' )
+                    enSesion = true
+                } else {
+                    sessionStorage.clear()
+                }
+            } catch (e) {}
+        } 
+    }
+    sesion()
+
     // CAMBIO EN MENÚ
     let ubicacion = window.location.hash
     const cambiar = async (sitio) => {
@@ -20,8 +45,9 @@
 
     // ENTRAR
     let modEntrar = false
-    let correo = ''
-    let clave = ''
+    let foto = ''
+    let correo = 'alberto_suarez_v@encrym.edu.m'
+    let clave = '3Ruckt00'
     let verClave = false
     const entrar = async () => {
         modEntrar = true
@@ -43,8 +69,27 @@
                         if ( rs.data.usuario_bloqueado ) {
                             Swal.fire({icon: 'error',title: 'Datos erroneos',text: 'Algo no coincide, por favor revisa de nuevo.'})
                         } else {
-                            Swal.fire({icon: 'success',title: 'Datos correctos',text: 'Acceso concedido, si pasa algún tiempo sin hacer algo se cerrará la sesión.'})
-                            
+                            if ( rs.data.en_sesion_previa ) {
+                                if ( rs.data.token == sessionStorage.getItem( 'token' ) ) {
+                                    Swal.fire({icon: 'info',title: 'Ya registrado',text: 'Acceso concedido, la sesión no ha terminado.'})
+                                } else {
+                                    Swal.fire({icon: 'info',title: 'Sesión en uso',text: 'Alguien ya está utilizando el acceso.'})
+                                    correo = ''
+                                    clave = ''
+                                    sessionStorage.clear()
+                                }
+                            } else {
+                                sessionStorage.setItem( 'token',rs.data.token )
+                                sessionStorage.setItem( 'nombreCompleto',rs.data.nombre_completo)
+                                sessionStorage.setItem( 'id_usuario',rs.data.id_usuario)
+                                sessionStorage.setItem( 'foto',rs.data.foto)
+                                sesion()
+                                Swal.fire({icon: 'success',title: 'Datos correctos',text: 'Acceso concedido, no cierre su navegador sin salir del sistema.'})
+                                push( '/Tablero' )
+                                ubicacion = '#/Tablero'
+                                correo = ''
+                                clave = ''
+                            }
                         }
                     } else {
                         Swal.fire({icon: 'error',title: 'Datos erroneos',text: 'Algo no coincide, por favor revisa de nuevo.'})
@@ -53,6 +98,11 @@
                     Swal.fire({icon: 'error',title: 'Datos erroneos',text: 'Algo no coincide, por favor revisa de nuevo.'})
                 }
             } catch (e) {}
+        } else {
+            correo = ''
+            correoValido = false
+            clave = ''
+            claveValida = false
         }
 	}
 
@@ -125,6 +175,7 @@
         } catch (e) {}
     }
 
+    let claveValida = false
     const validarClave = async () => {
         clave = clave.trim()
         if ( contarAltas(clave)>0 && contarBajas(clave)>0 && contarNumeros(clave)>0 && contarEspeciales(clave)>0 && clave.length>7 ) {
@@ -188,14 +239,21 @@
         }
     }
 
-    let claveValida = false
-    // const validarClave = async (valor) => {
-    //     if ( /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$/.test(valor) ) {
-    //         claveValida = true
-    //     } else {
-    //         claveValida = false
-    //     }
-    // }
+    // CERRAR SESION
+    const cerrarSesion = async () => {
+        try {
+            spinner = true
+            const rs = await axios.post(Lugar.backend+'cerrar_sesion.php',{
+                id_usuario: sessionStorage.getItem( 'id_usuario' )
+            })
+            spinner = false
+            sessionStorage.clear()
+            usuarioActual_id = 0
+            usuarioActual_nombre = ''
+            enSesion = false
+            push( '/' )
+        } catch (e) {}
+    }
 
     // OTRAS FUNCIONES
     const contarAltas = (string) =>{
@@ -234,13 +292,17 @@
         return out
     }
 
+    const enterLogin = e => {
+        if (e.charCode === 13) resModEntrar('save');
+    };
+
     // DEBUG
-    let debug = true
+    let debug = false
 </script>
 
 <main>
 
-    <nav class="navbar navbar-expand-lg bg-azul-1">
+    <nav class="navbar navbar-expand-lg bg-amarillo-1">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -253,8 +315,25 @@
                 <li class="nav-item">
                     <button class="btn {ubicacion == '#/Acerca' ? 'active' : ''}" on:click={()=>cambiar('/Acerca')}>Acerca de este software</button>
                 </li>
+                {#if enSesion }
+                    <li class="nav-item">
+                        <button class="btn {ubicacion == '#/Tablero' ? 'active' : ''}" on:click={()=>cambiar('/Tablero')}>Tablero</button>
+                    </li>
+                {/if}
             </ul>
-            <button class="btn entrar" on:click={entrar}>Entrar</button>
+            {#if usuarioActual_nombre != ''}
+                 <div class="btn-group">
+                    <button type="button" class="btn btn-azul-5"><strong>{usuarioActual_nombre}</strong></button>
+                    <button type="button" class="btn btn-azul-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span ><img class="foto" src={Lugar.fotos+sessionStorage.getItem( 'foto' )} alt="" style="border-radius:50%;"></span>
+                    </button>
+                    <ul class="dropdown-menu bg-azul-3">
+                      <li><button class="dropdown-item btn-azul-3" on:click={cerrarSesion}>Cerrar sesión</button></li>
+                    </ul>
+                  </div>
+            {:else}
+                 <button class="btn entrar" on:click={entrar}>Entrar</button>
+            {/if}
             </div>
         </div>
     </nav>
@@ -266,14 +345,14 @@
         closeButtonText="Cancelar">
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Correo:*</strong></span>
-            <input type="text" class="form-control {correoValido ? 'is-valid' : 'is-invalid'}" bind:value={correo} on:input={validarCorreo}>
+            <input type="text" class="form-control {correoValido ? 'is-valid' : 'is-invalid'}" bind:value={correo} on:input={validarCorreo} on:keypress={enterLogin}>
         </div>
         <div class="input-group mb-1">
             <span class="input-group-text"><strong>Clave:*</strong></span>
             {#if verClave}
-                <input type="text" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)}>
+                <input type="text" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)} on:keypress={enterLogin}>
             {:else}
-                <input type="password" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)}>
+                <input type="password" class="form-control {claveValida ? 'is-valid' : 'is-invalid'}" bind:value={clave} on:input={()=>validarClave(clave)} on:keypress={enterLogin}>
             {/if}
             <button class="btn btn-outline-secondary" on:click={()=>verClave = !verClave}><i class="bi {verClave ? 'bi-eye-fill' : 'bi-eye-fill'} {verClave ? 'text-danger' : 'text-success'}"></i></button>
         </div>
@@ -363,13 +442,16 @@
     {#if debug}
         <div class="debug">
             <div class="input-group mb-1">
-                <span class="input-group-text">claveValida</span><input type="text" class="form-control" bind:value={claveValida}>
+                <span class="input-group-text">foto</span><input type="text" class="form-control" bind:value={foto}>
             </div>
         </div>
     {/if}
 </main>
 
 <style>
+    .foto {
+        width: 30px;
+    }
     .accordion-button {
         background-color: var(--amarillo-5);
         color: white;
