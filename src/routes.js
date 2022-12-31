@@ -4,6 +4,7 @@ import Test from "./Principal/Administrador/test.svelte";
 import ControlMenu from "./Principal/Administrador/ControlMenu.svelte";
 import ControlUsuarios from "./Principal/Administrador/ControlUsuarios.svelte";
 import ControlPerfiles from "./Principal/Administrador/ControlMenu.svelte";
+import PerfilesUsuario from "./Principal/Administrador/PerfilesUsuario.svelte";
 import Tablero from "./Principal/Usuario/Tablero.svelte";
 import Error404 from "./Errores/Error404.svelte";
 
@@ -16,6 +17,7 @@ const routes = {
         '/ControlMenu':     ControlMenu,
         '/ControlUSuarios': ControlUsuarios,
         '/ControlPerfiles': ControlPerfiles,
+        '/PerfilesUsuario': PerfilesUsuario,
     // Usuarios
         '/Tablero': Tablero,
     // Errores

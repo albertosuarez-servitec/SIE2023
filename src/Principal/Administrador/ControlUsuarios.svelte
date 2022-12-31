@@ -9,6 +9,7 @@
     import Lugar from "../../lugares"
     import Modal from "../../Componentes/Modal.svelte";
     import Swal from "sweetalert2"
+    import { push } from "svelte-spa-router";
     
     // PAGINADOR
     let maxRegsPP = 10
@@ -282,6 +283,13 @@
         }
 	}
 
+    // PERFIL USUARIO
+    const perfilesUsuario = async (id_usuarioT, nombreCompletoT) => {
+        sessionStorage.setItem( 'id_usuario_p', id_usuarioT )
+        sessionStorage.setItem( 'nombreCompleto_p', nombreCompletoT)
+        push( '/PerfilesUsuario' )
+    }
+
     // FUNCIONES GENERALES
     const limpiarFiltro = () => {
         filtro = ''
@@ -359,7 +367,7 @@
         <div class="row">
             <div class="col-6 col-lg-8 col-xxl-9">
                 <div class="input-group mb-3 barra-acciones">
-                    <button class="btn btn-success" type="button" on:click={agregarRegistro}><i class="bi bi-plus-circle"></i> Agregar registro</button>
+                    <button class="btn btn-success" type="button" on:click={agregarRegistro}><i class="bi bi-plus-circle"></i> Agregar usuario</button>
                 </div>
             </div>
             <div class="col-6 col-lg-4 col-xxl-3 navs">
@@ -421,7 +429,7 @@
                                     <th             >
                                         <div >
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <i class="bi bi-pencil-fill text-warning" 
+                                            <i class="bi bi-pencil-fill text-warning pointer" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
                                                 title="Editar registro" 
@@ -429,7 +437,7 @@
                                                 on:click={()=>editarRegistro(registro.id_usuario,registro.nombres,registro.primer_apellido,registro.segundo_apellido,registro.correo,registro.codigo)}>
                                             </i>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <i class="bi bi-key text-primary" 
+                                            <i class="bi bi-key text-primary pointer" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
                                                 title="Cambiar clave de acceso" 
@@ -437,12 +445,20 @@
                                                 on:click={()=>cambiarClave(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
                                             </i>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <i class="bi bi-trash text-danger" 
+                                            <i class="bi bi-trash text-danger pointer" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
                                                 title="Eliminar usuario definitivamente" 
                                                 style="font-size:large;"
                                                 on:click={()=>eliminarUsuario(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
+                                            </i>
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <i class="bi bi-person-lines-fill text-success pointer" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="right" 
+                                                title="Perfiles de usuario" 
+                                                style="font-size:large;"
+                                                on:click={()=>perfilesUsuario(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
                                             </i>
                                         </div>
                                     </th>
@@ -569,6 +585,9 @@
 </main>
 
 <style>
+    .pointer {
+        cursor: pointer;
+    }
     .bloqueado {
         width: 100px;
     }

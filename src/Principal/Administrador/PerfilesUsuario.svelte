@@ -1,0 +1,441 @@
+<script>
+    // @ts-nocheck
+    // LIBRERIAS O COMPONENTES CON VARIABLE EXTRA
+    import Spinner from "../../Componentes/Spinner.svelte";
+    let spinner = false
+    
+    // LIBRERIAS O COMPONENTES SIN VARIABLE EXTRA
+    import axios from "axios"
+    import Lugar from "../../lugares"
+    import Modal from "../../Componentes/Modal.svelte";
+    import Swal from "sweetalert2"
+    
+    // PAGINADOR
+    let maxRegsPP = 10
+    let paginas = 0
+    let paginaActual = 1
+    let registroInicial = 1
+    let registroFinal = 10
+    let residuo = 0
+    let pagAd = 0
+    let rsPerfiles = []
+    let rsModulos = []
+    
+    const cambiarMaxRegsPP = () => {
+        paginas = Math.floor( rsPerfiles.length / maxRegsPP )
+        residuo = ( rsPerfiles.length % maxRegsPP )
+        if ( residuo > 0 ) {
+            pagAd = 1
+        } else {
+            pagAd = 0
+        }
+        paginas = paginas + pagAd
+        paginaActual = 1
+        registroInicial = 1
+        registroFinal = maxRegsPP
+    }
+
+    const cambiarPagina = (pagina) => {
+        paginaActual = pagina
+        registroInicial = (paginaActual * maxRegsPP) - (maxRegsPP - 1)
+        registroFinal = paginaActual * maxRegsPP
+    }
+
+    // RECORDSET INICIAL
+    let filtro = ''
+    let tienePerfiles = false
+    let tieneModulos = false
+    const main = async () => {
+        try {
+            spinner = true
+                const rs = await axios.post(Lugar.backend+'perfiles_usuario.php',{
+                    filtro: filtro,
+                    id_usuario: sessionStorage.getItem( 'id_usuario_p')
+                })
+            spinner = false
+            if ( rs.data.tienePerfiles ) {
+                tienePerfiles = true
+                rsPerfiles = Object.values(rs.data.rsPerfiles)
+                paginas = Math.floor( rsPerfiles.length / maxRegsPP )
+                residuo = ( rsPerfiles.length % maxRegsPP )
+                if ( residuo > 0 ) {
+                    pagAd = 1
+                } else {
+                    pagAd = 0
+                }
+                paginas = paginas + pagAd
+                paginaActual = 1
+                registroInicial = 1
+                registroFinal = maxRegsPP
+                if ( rs.data.tieneModulos ) {
+                    tieneModulos = true
+                    rsModulos = Object.values(rs.data.rsModulos)
+                }
+            }
+        } catch (e) {}
+    }
+    main()
+
+    // AGREGAR REGISTRO
+    let perfil_nombre = ''
+    let perfil_descripcion = ''
+    let modAgregarRegistro = false
+    const agregarRegistro = () => {
+        perfil_nombre = ''
+        perfil_descripcion = ''
+        perfil_nombreValido = false
+        modAgregarRegistro = true
+    }
+
+    const resAgregarRegistro = async (data) => {
+        perfil_nombre = perfil_nombre.trim()
+        perfil_descripcion = perfil_descripcion.trim()
+        modAgregarRegistro = false
+        if (data == 'save'){
+            if ( perfil_nombreValido ) {
+                try {
+                    spinner = true
+                    const rs = await axios.post(Lugar.backend+'agregar_registro_usuarios_perfiles.php', {
+                        fk_id_usuario: sessionStorage.getItem( 'id_usuario_p'),
+                        fk_id_perfil: id_perfil,
+                    })
+                    spinner = false
+                    main()
+                } catch (e) {}
+            } else {
+                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El nombre del perfil debe ser válido.'})
+            }
+        }
+	}
+
+    let perfil_nombreValido = true
+    const validarNombres = () => {
+        if ( perfil_nombre.length > 2 ) {
+            perfil_nombreValido = true
+        } else {
+            perfil_nombreValido = false
+        }
+    }
+
+    let primer_apellidoValido = true
+    const validarPrimer_Apellido = () => {
+        if ( perfil_descripcion.length > 2 ) {
+            primer_apellidoValido = true
+        } else {
+            primer_apellidoValido = false
+        }
+    }
+
+    const resEditarRegistro = async (data) => {
+        perfil_nombre = perfil_nombre.trim()
+        perfil_descripcion = perfil_descripcion.trim()
+        modEditarRegistro = false
+        if (data == 'save'){
+            if ( perfil_nombreValido && primer_apellidoValido && correoValido) {
+                try {
+                    spinner = true
+                    const rs = await axios.post(Lugar.backend+'actualizar_usuarios.php', {
+                        id_usuario: id_usuario,
+                        perfil_nombre: perfil_nombre,
+                        perfil_descripcion: perfil_descripcion,
+                    })
+                    spinner = false
+                    main()
+                } catch (e) {}
+            } else {
+                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El nombre del perfil debe ser válido.'})
+            }
+        }
+	}
+
+    // QUITAR PERFIL
+    let modQuitarPerfil = false
+    const quitarPerfil = async (id_usuarioT, perfil_nombreT) => {
+        id_usuario = id_usuarioT
+        perfil_nombre = nombreCompletoT
+        modQuitarPerfil = true
+    }
+
+    // MÓDULOS DEL PERFIL
+    const modulosPerfil = () => {
+
+    }
+
+    const resQuitarPerfil = async (data) => {
+        modQuitarPerfil = false
+        if (data == 'save'){
+            try {
+                spinner = true
+                const rs = await axios.post(Lugar.backend+'eliminar_registro_usuarios.php',{
+                    id_usuario: id_usuario
+                })
+                spinner = false
+            } catch (e) {}
+            main()
+        }
+	}
+
+    // FUNCIONES GENERALES
+    const limpiarFiltro = () => {
+        filtro = ''
+        main()
+    }
+
+    // DEBUG
+    let debug = false
+
+</script>
+
+<main>
+
+    {#if spinner}
+        <Spinner />
+    {/if}
+
+    <div class="barra bg-light">
+        <div class="row">
+            <div class="col-6 col-lg-8 col-xxl-9">
+                <div class="input-group mb-3 barra-filtrar ">
+                    <span class="input-group-text"><strong>Filtrar:</strong></span>
+                    <input type="text" class="form-control" placeholder="Escriba para filtrar" bind:value={filtro}>
+                    <button class="btn btn-outline-success" on:click={limpiarFiltro}>Limpiar</button>
+                    <button class="btn btn-outline-success" on:click={main}>Buscar</button>
+                </div>
+            </div>
+            <div class="col-6 col-lg-4 col-xxl-3">
+                <div class="input-group mb-3 barra-paginador bg-light">
+                    <span class="input-group-text"><strong>Registros por página:</strong></span>
+                    <select class="form-select" bind:value={maxRegsPP} on:change="{cambiarMaxRegsPP}">
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 col-lg-8 col-xxl-9">
+                <div class="input-group mb-3 barra-acciones">
+                    <button class="btn btn-success" type="button" on:click={agregarRegistro}><i class="bi bi-plus-circle"></i> Agregar perfil</button>
+                </div>
+            </div>
+            <div class="col-6 col-lg-4 col-xxl-3 navs">
+                {#if tienePerfiles }
+                    <div class="input-group mb-3 barra-navPaginas">
+                        <div role="group">
+                            {#if paginaActual != 1}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(1)}>{'<<'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'<<'}</button>
+                            {/if}
+                            {#if paginaActual != 1}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginaActual-1)}>{'<'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'<'}</button>
+                            {/if}
+                            {#each Array(paginas) as _, i}
+                                {#if i+1 == paginaActual - 1 || i+1 == paginaActual || i+1 == paginaActual + 1}
+                                    <button type="button" class="btn {paginaActual == i+1 ? 'btn-primary' : 'btn-light'}" on:click={()=>cambiarPagina(i+1)}>{i+1}</button>
+                                {/if}
+                            {/each}
+                            {#if paginaActual < paginas}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginaActual+1)}>{'>'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'>'}</button>
+                            {/if}
+                            {#if paginaActual < paginas}
+                                <button type="button" class="btn btn-primary" on:click={()=>cambiarPagina(paginas)}>{'>>'}</button>
+                            {:else}
+                                <button type="button" class="btn btn-primary" disabled>{'>>'}</button>
+                            {/if}
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        </div>
+        
+        <div class="barra-registros">
+
+            <div class="accordion" id="acordeonPerfil">
+                { #if tienePerfiles }
+                    { #each rsPerfiles as perfil, i }
+                        { #if perfil.numero >= registroInicial && perfil.numero <= registroFinal }
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{i+1}">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{i+1}" >
+                                        <div class="row" style="width: 100%;">
+                                            <div class="col-2">
+                                                <strong>{ perfil.perfil_nombre }</strong>
+                                            </div>
+                                            <div class="col-10">
+                                                { perfil.perfil_descripcion }
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse{i+1}" class="accordion-collapse collapse {i==0?'show':''}" aria-labelledby="heading{i+1}" data-bs-parent="#acordeonPerfil">
+                                    <div class="accordion-body">
+                                        { #if tieneModulos }
+                                            { #each rsModulos as modulo, i }
+                                                {#if perfil.id_perfil == modulo.id_perfil}
+                                                    <div class="row">
+                                                    <div class="col-2">
+                                                        <strong>{ modulo.modulo_nombre }</strong>
+                                                    </div>
+                                                    <div class="col-10">
+                                                        <strong>{ modulo.modulo_descripcion }</strong>
+                                                    </div>
+                                                    </div>
+                                                {/if}
+                                            { /each }
+                                        { :else }
+                                            <div class="card">
+                                                <!-- <img src="..." alt='...'> -->
+                                                <div class="card-body">
+                                                <h5 class="card-title"><strong>Faltan datos</strong></h5>
+                                                <p class="card-text">No se encontraron módulos para este perfil en la base de datos.</p>
+                                                </div>
+                                            </div>
+                                        { /if }
+                                    </div>
+                                </div>
+                            </div>
+                        { /if }
+                    { /each }
+                { :else }
+
+                    <div class="card">
+                        <!-- <img src="..." alt='...'> -->
+                        <div class="card-body">
+                        <h5 class="card-title"><strong>Faltan datos</strong></h5>
+                        <p class="card-text">No se encontraron perfiles para este usuario en la base de datos.</p>
+                        </div>
+                    </div>
+
+                {/if}
+            </div>
+            
+            <!-- <table class="table table-hover bg-light table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Acciones</th>
+                        <th scope="col">Perfil</th>
+                        <th scope="col">Descripción</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {#if tienePerfiles}
+                        {#each rsPerfiles as registro, i}
+                            {#if registro.numero >= registroInicial && registro.numero <= registroFinal}
+                                <tr>
+                                    <th scope="row" >{registro.numero}</th>
+                                    <th             >
+                                        <div > -->
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <!-- <i class="bi bi-trash text-danger pointer" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="right" 
+                                                title="Quitar perfil" 
+                                                style="font-size:large;"
+                                                on:click={()=>quitarPerfil(registro.id_usuario, registro.perfil_nombre)}>
+                                            </i> -->
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <!-- <i class="bi bi-person-lines-fill text-success pointer" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-placement="right" 
+                                                title="Módulos del perfil" 
+                                                style="font-size:large;"
+                                                on:click={()=>modulosPerfil(registro.id_perfil, registro.perfil_nombre)} type="button" data-bs-target="#collapse{i}" aria-expanded="false" aria-controls="collapse{i}">
+                                            </i>
+                                        </div>
+                                    </th>
+                                    <td             >{registro.perfil_nombre}</td>
+                                    <td             >{registro.perfil_descripcion}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="collapse" id="collapse{i}">
+                                            <div class="">
+                                              Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/if}
+                        {/each}
+                    {:else}
+                        <td colspan="8">
+                            <div class="sin-datos text-center">
+                                <div class="card"> -->
+                                    <!-- <img src="..." alt='...'> -->
+                                    <!-- <div class="card-body">
+                                    <h5 class="card-title"><strong>Faltan datos</strong></h5>
+                                    <p class="card-text">No se encontró información en la base de datos.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    {/if}
+                </tbody>
+            </table> -->
+        </div>
+
+        <div class="input-group mb-3 bg-light barra-regresar">
+            <button class="btn btn-primary" type="button">Regresar</button>
+        </div>
+    </div>
+
+    <Modal open={modAgregarRegistro} onClosed={(data) => resAgregarRegistro(data)}
+        title="Agregar registro:" 
+        saveButtonText="Guardar registro" 
+        closeButtonText="Cancelar">
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Perfil:*</strong></span>
+            <input type="text" class="form-control" bind:value={perfil_nombre} on:input={validarNombres}>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text"><strong>Descripción del perfil:*</strong></span>
+            <input type="text" class="form-control" bind:value={perfil_descripcion} on:input={validarPrimer_Apellido}>
+        </div>
+    </Modal>
+    
+    <Modal open={modQuitarPerfil} onClosed={(data) => resQuitarPerfil(data)}
+        title="Quitar perfil: ({perfil_nombre})" 
+        saveButtonText="Eliminar definitivamente" 
+        closeButtonText="Cancelar">
+        <div class="d-flex justify-content-center">
+            <h1 class="input-group-text"><strong>ESTO NO SE PUEDE DESHACER</strong></h1>
+        </div>
+    </Modal>
+
+    <!-- DEBUG -->
+    {#if debug}
+        <div class="debug">
+            <div class="input-group mb-3">
+                <span class="input-group-text">debug</span>
+                <input type="text" class="form-control" bind:value={debug}>
+            </div>
+        </div>
+    {/if}
+
+</main>
+
+<style>
+    .pointer {
+        cursor: pointer;
+    }
+    .navs {
+        display: grid;
+    }
+    /* DEBUG */
+    .debug {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+    .debug .input-group {
+        margin-bottom: 0px !important;
+    }
+</style>
