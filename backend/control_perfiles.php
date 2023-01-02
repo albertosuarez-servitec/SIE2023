@@ -10,7 +10,7 @@
             perfiles.id_perfil, 
             perfiles.perfil_nombre, 
             perfiles.perfil_descripcion, 
-            perfiles.perfil_bloqueo,
+            perfiles.perfil_activo,
             perfiles.perfil_orden
         FROM
             perfiles WHERE perfiles.perfil_nombre LIKE '%".$filtro."%'
@@ -23,7 +23,7 @@
         perfiles.id_perfil, 
         perfiles.perfil_nombre, 
         perfiles.perfil_descripcion, 
-        perfiles.perfil_bloqueo,
+        perfiles.perfil_activo,
         perfiles.perfil_orden
     FROM
         perfiles
@@ -42,11 +42,11 @@
             $rsRegistros[$i]['id_perfil']           = $fila['id_perfil'];
             $rsRegistros[$i]['perfil_nombre']       = utf8_decode(utf8_encode( $fila['perfil_nombre'] ));
             $rsRegistros[$i]['perfil_descripcion']  = utf8_decode(utf8_encode( $fila['perfil_descripcion'] ));
-            $rsRegistros[$i]['perfil_bloqueo']      = entero2buleano( $fila['perfil_bloqueo'] );
-            $rsRegistros[$i]['menu_orden']          = intval( $fila['menu_orden'] );
+            $rsRegistros[$i]['perfil_activo']      = entero2buleano( $fila['perfil_activo'] );
+            $rsRegistros[$i]['perfil_orden']          = intval( $fila['perfil_orden'] );
             $i++;
         }
-        $query = "SELECT MIN(perfil.perfil_orden) as minimo_orden, MAX(perfil.perfil_orden) as maximo_orden FROM perfil";
+        $query = "SELECT MIN(perfiles.perfil_orden) as minimo_orden, MAX(perfiles.perfil_orden) as maximo_orden FROM perfiles";
         $resultado = DB::runQuery( $query );
         $db = $resultado->fetch_assoc();
         $minimo_orden = intval($db['minimo_orden']);

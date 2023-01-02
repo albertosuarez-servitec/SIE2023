@@ -3,7 +3,7 @@ import Acerca from "./Principal/UsuarioFinal/Acerca.svelte";
 import Test from "./Principal/Administrador/test.svelte";
 import ControlMenu from "./Principal/Administrador/ControlMenu.svelte";
 import ControlUsuarios from "./Principal/Administrador/ControlUsuarios.svelte";
-import ControlPerfiles from "./Principal/Administrador/ControlMenu.svelte";
+import ControlPerfiles from "./Principal/Administrador/ControlPerfiles.svelte";
 import PerfilesUsuario from "./Principal/Administrador/PerfilesUsuario.svelte";
 import Tablero from "./Principal/Usuario/Tablero.svelte";
 import Error404 from "./Errores/Error404.svelte";

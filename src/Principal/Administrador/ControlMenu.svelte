@@ -327,7 +327,7 @@
                                             <i class="bi bi-trash-fill text-danger" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
-                                                title="Editar registro" 
+                                                title="Eliminar registro" 
                                                 style="font-size:large;"
                                                 on:click={()=>eliminarRegistro(registro.id_menu,registro.menu_nombre)}>
                                             </i>
@@ -345,13 +345,13 @@
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <div class="col-6" on:click={()=>bajar(registro.id_menu,registro.menu_orden)}>
                                                 {#if registro.menu_orden != maximo_orden}
-                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-down-fill flechaAbajo"></i>
+                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-down-fill pointer"></i>
                                                 {/if}
                                             </div>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <div class="col-6" on:click={()=>subir(registro.id_menu,registro.menu_orden)}>
                                                 {#if registro.menu_orden != minimo_orden}
-                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-up-fill flechaArriba"></i>
+                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-up-fill pointer"></i>
                                                 {/if}
                                             </div>
                                         </div>
@@ -437,12 +437,6 @@
 </main>
 
 <style>
-    .flechaAbajo {
-        cursor: pointer;
-    }
-    .flechaArriba {
-        cursor: pointer;
-    }
     .mostrar {
         width: 100px;
     }

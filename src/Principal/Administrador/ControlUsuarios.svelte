@@ -585,9 +585,6 @@
 </main>
 
 <style>
-    .pointer {
-        cursor: pointer;
-    }
     .bloqueado {
         width: 100px;
     }

@@ -302,7 +302,7 @@
                                             <i class="bi bi-trash-fill text-danger" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
-                                                title="Editar registro" 
+                                                title="Eliminar registro" 
                                                 style="font-size:large;"
                                                 on:keydown={null} on:click={()=>eliminarRegistro(registro.id_test,registro.texto)}>
                                             </i>

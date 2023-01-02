@@ -10,7 +10,8 @@
         "SELECT
             perfiles.id_perfil, 
             perfiles.perfil_nombre, 
-            perfiles.perfil_descripcion, 
+            perfiles.perfil_descripcion,
+            perfiles.perfil_activo,
             perfiles.perfil_orden
         FROM
             usuarios
@@ -23,7 +24,7 @@
             ON 
                 usuarios_perfiles.fk_id_perfil = perfiles.id_perfil
         WHERE
-            perfiles.perfil_bloqueo = 0 AND
+            perfiles.perfil_activo = 0 AND
             usuarios.id_usuario = ? AND
             perfiles.perfil_nombre LIKE '%".$filtro."%'
         ORDER BY
@@ -49,7 +50,7 @@
             ON 
                 usuarios_perfiles.fk_id_perfil = perfiles.id_perfil
         WHERE
-            perfiles.perfil_bloqueo = 0 AND
+            perfiles.perfil_activo = 0 AND
             usuarios.id_usuario = ?
         ORDER BY
             perfiles.perfil_orden ASC";
@@ -99,7 +100,7 @@
             ON 
                 perfiles_modulos.fk_id_modulo = modulos.id_modulo
         WHERE
-            perfiles.perfil_bloqueo = 0 AND
+            perfiles.perfil_activo = 0 AND
             usuarios.id_usuario = ? AND
             modulos.modulo_activo = 1
         ORDER BY

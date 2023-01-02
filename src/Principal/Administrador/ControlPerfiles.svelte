@@ -80,7 +80,7 @@
             spinner = true
             const rs = await axios.post(Lugar.backend+'cambiar_perfil_activo.php',{
                 id_perfil:id_perfilT,
-                menu_activo:perfil_activoT
+                perfil_activo:perfil_activoT
             })
             spinner = false
         } catch (e) {}
@@ -287,12 +287,9 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Acciones</th>
-                        <th scope="col">Menú</th>
+                        <th scope="col">Perfil</th>
                         <th class="text-center" scope="col">Orden</th>
                         <th class="text-center" scope="col">Activo</th>
-                        <th class="text-center" scope="col">Mostrar</th>
-                        <th scope="col">Destino</th>
-                        <th scope="col">Ruta</th>
                     </tr>
                 </thead>
                 <tbody >
@@ -301,8 +298,8 @@
                             {#if registro.numero >= registroInicial && registro.numero <= registroFinal}
                                 <tr>
                                     <th scope="row" >{registro.numero}</th>
-                                    <th             >
-                                        <div >
+                                    <th>
+                                        <div>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <i class="bi bi-pencil-fill text-warning" 
                                                 data-bs-toggle="tooltip" 
@@ -315,7 +312,7 @@
                                             <i class="bi bi-trash-fill text-danger" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
-                                                title="Editar registro" 
+                                                title="Eliminar registro" 
                                                 style="font-size:large;"
                                                 on:click={()=>eliminarRegistro(registro.id_perfil,registro.perfil_nombre)}>
                                             </i>
@@ -327,37 +324,29 @@
                                             </i>
                                         </div>
                                     </th>
-                                    <td             >{registro.perfil_nombre}</td>
+                                    <td>{registro.perfil_nombre}</td>
                                     <td class="orden">
                                         <div class="row">
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <div class="col-6" on:click={()=>bajar(registro.id_perfil,registro.menu_orden)}>
                                                 {#if registro.menu_orden != maximo_orden}
-                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-down-fill flechaAbajo"></i>
+                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-down-fill pointer"></i>
                                                 {/if}
                                             </div>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <div class="col-6" on:click={()=>subir(registro.id_perfil,registro.menu_orden)}>
                                                 {#if registro.menu_orden != minimo_orden}
-                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-up-fill flechaArriba"></i>
+                                                     <i style="font-size:1.5rem;" class="text-primary bi bi-caret-up-fill pointer"></i>
                                                 {/if}
                                             </div>
                                         </div>
                                     </td>
                                     <td class="activo">
                                         <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.menu_activo}
-                                            on:change={()=>cambiarPerfil_Activo(registro.id_perfil,registro.menu_activo)}>
+                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.perfil_activo}
+                                            on:change={()=>cambiarPerfil_Activo(registro.id_perfil,registro.perfil_activo)}>
                                         </div>
                                     </td>
-                                    <td class="mostrar">
-                                        <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.menu_mostrar}
-                                            on:change={()=>cambiarMenu_Mostrar(registro.id_perfil,registro.menu_mostrar)}>
-                                        </div>
-                                    </td>
-                                    <td             >{registro.menu_destino}</td>
-                                    <td             >{registro.menu_ruta}</td>
                                 </tr>   
                             {/if}
                         {/each}
@@ -425,15 +414,6 @@
 </main>
 
 <style>
-    .flechaAbajo {
-        cursor: pointer;
-    }
-    .flechaArriba {
-        cursor: pointer;
-    }
-    .mostrar {
-        width: 100px;
-    }
     .activo {
         width: 100px;
     }
