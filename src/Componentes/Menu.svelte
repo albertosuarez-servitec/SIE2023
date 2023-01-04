@@ -251,6 +251,10 @@
             usuarioActual_id = 0
             usuarioActual_nombre = ''
             enSesion = false
+            correo = ''
+            correoValido = false
+            claveValida = false
+            clave = ''
             push( '/' )
         } catch (e) {}
     }

@@ -24,7 +24,7 @@
             ON 
                 usuarios_perfiles.fk_id_perfil = perfiles.id_perfil
         WHERE
-            perfiles.perfil_activo = 0 AND
+            perfiles.perfil_activo = 1 AND
             usuarios.id_usuario = ? AND
             perfiles.perfil_nombre LIKE '%".$filtro."%'
         ORDER BY
@@ -50,14 +50,13 @@
             ON 
                 usuarios_perfiles.fk_id_perfil = perfiles.id_perfil
         WHERE
-            perfiles.perfil_activo = 0 AND
+            perfiles.perfil_activo = 1 AND
             usuarios.id_usuario = ?
         ORDER BY
             perfiles.perfil_orden ASC";
         $values = [ $id_usuario ];
         $resultado = DB::runQuery( $query, $values );
     }
-
     $tienePerfiles = false;
     $rsPerfiles = [];
     $tieneModulos = false;
@@ -70,7 +69,7 @@
             $rsPerfiles[$i]['id_perfil']           = $fila['id_perfil'];
             $rsPerfiles[$i]['perfil_nombre']       = utf8_decode(utf8_encode( $fila['perfil_nombre'] ));
             $rsPerfiles[$i]['perfil_descripcion']  = utf8_decode(utf8_encode( $fila['perfil_descripcion'] ));
-            $rsPerfiles[$i]['perfil_orden']              = intval( $fila['perfil_orden'] );
+            $rsPerfiles[$i]['perfil_orden']        = intval( $fila['perfil_orden'] );
             $i++;
         }
         $query = 
@@ -100,7 +99,7 @@
             ON 
                 perfiles_modulos.fk_id_modulo = modulos.id_modulo
         WHERE
-            perfiles.perfil_activo = 0 AND
+            perfiles.perfil_activo = 1 AND
             usuarios.id_usuario = ? AND
             modulos.modulo_activo = 1
         ORDER BY
@@ -122,5 +121,40 @@
             }
         }
     }
-    echo json_encode(array("tienePerfiles"=>$tienePerfiles,"rsPerfiles"=>$rsPerfiles,"tieneModulos"=>$tieneModulos,"rsModulos"=>$rsModulos))
+    $query =
+    "SELECT
+        perfiles.id_perfil, 
+        perfiles.perfil_nombre, 
+        perfiles.perfil_descripcion, 
+        perfiles.perfil_activo, 
+        perfiles.perfil_orden
+    FROM
+        perfiles
+    WHERE
+        perfiles.perfil_activo = 1 AND
+        perfiles.id_perfil NOT IN ((SELECT
+        usuarios_perfiles.fk_id_perfil
+    FROM
+        usuarios_perfiles
+    WHERE
+        usuarios_perfiles.fk_id_usuario = ?))
+    ORDER BY
+        perfiles.perfil_orden ASC";
+    $values = [$id_usuario];
+    $resultado = DB::runQuery($query, $values);
+    $tienePerfilesDisponibles = false;
+    $rsPerfilesDisponibles = [];
+    if ( $resultado->num_rows !== 0 ) {
+        $tienePerfilesDisponibles = true;
+        $i=1;
+        while ($fila = $resultado->fetch_assoc()) {
+            $rsPerfilesDisponibles[$i]['numero']              = $i;
+            $rsPerfilesDisponibles[$i]['id_perfil']           = $fila['id_perfil'];
+            $rsPerfilesDisponibles[$i]['perfil_nombre']       = utf8_decode(utf8_encode( $fila['perfil_nombre'] ));
+            $rsPerfilesDisponibles[$i]['perfil_descripcion']  = utf8_decode(utf8_encode( $fila['perfil_descripcion'] ));
+            $rsPerfilesDisponibles[$i]['perfil_orden']        = intval( $fila['perfil_orden'] );
+            $i++;
+        }
+    }
+    echo json_encode(array("tienePerfiles"=>$tienePerfiles,"rsPerfiles"=>$rsPerfiles,"tieneModulos"=>$tieneModulos,"rsModulos"=>$rsModulos,"tienePerfilesDisponibles"=>$tienePerfilesDisponibles,"rsPerfilesDisponibles"=>$rsPerfilesDisponibles))
 ?>

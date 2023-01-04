@@ -9,6 +9,7 @@
     import Lugar from "../../lugares"
     import Modal from "../../Componentes/Modal.svelte";
     import Swal from "sweetalert2"
+    import { push } from 'svelte-spa-router'
     
     // PAGINADOR
     let maxRegsPP = 10
@@ -20,6 +21,7 @@
     let pagAd = 0
     let rsPerfiles = []
     let rsModulos = []
+    let rsPerfilesDisponibles = []
     
     const cambiarMaxRegsPP = () => {
         paginas = Math.floor( rsPerfiles.length / maxRegsPP )
@@ -45,6 +47,7 @@
     let filtro = ''
     let tienePerfiles = false
     let tieneModulos = false
+    let tienePerfilesDisponibles = false
     const main = async () => {
         try {
             spinner = true
@@ -72,6 +75,11 @@
                     rsModulos = Object.values(rs.data.rsModulos)
                 }
             }
+            if ( rs.data.tienePerfilesDisponibles ) {
+                tienePerfilesDisponibles = true
+                rsPerfilesDisponibles = Object.values(rs.data.rsPerfilesDisponibles)
+                console.log(rsPerfilesDisponibles)
+            }
         } catch (e) {}
     }
     main()
@@ -80,6 +88,7 @@
     let perfil_nombre = ''
     let perfil_descripcion = ''
     let modAgregarPerfil = false
+    let disponibleSeleccionado = 0
     const agregarPerfil = () => {
         modAgregarPerfil = true
     }
@@ -91,7 +100,7 @@
                 spinner = true
                 const rs = await axios.post(Lugar.backend+'agregar_usuarios_perfil.php', {
                     fk_id_usuario: sessionStorage.getItem( 'id_usuario_p'),
-                    fk_id_perfil: id_perfil,
+                    fk_id_perfil: disponibleSeleccionado
                 })
                 spinner = false
                 main()
@@ -104,7 +113,7 @@
     let id_usuario = 0
     let id_perfil = 0
     const quitarPerfil = async (id_perfilT, perfil_nombreT) => {
-        id_usuario = sessionStorage.getItem('id_usuario_p')
+        id_usuario = parseInt(sessionStorage.getItem('id_usuario_p'))
         id_perfil = id_perfilT
         perfil_nombre = perfil_nombreT
         modQuitarPerfil = true
@@ -122,14 +131,20 @@
                 })
                 spinner = false
             } catch (e) {}
-            main()
         }
+        main()
 	}
 
     // FUNCIONES GENERALES
+    const blackhole = () => {}
+
     const limpiarFiltro = () => {
         filtro = ''
         main()
+    }
+
+    const regresar = () => {
+        push('/ControlUsuarios')
     }
 
     // DEBUG
@@ -226,15 +241,12 @@
                                     </button>
                                 </h2>
                                 <div id="collapse{i+1}" class="accordion-collapse collapse {i==0?'show':''}" aria-labelledby="heading{i+1}" data-bs-parent="#acordeonPerfil">
+                                    <div class="quitar pointer shadow" on:keydown={blackhole} on:click={()=>quitarPerfil(perfil.id_perfil,perfil.perfil_nombre)}>Quitar perfil</div>
+                                    <div>
+                                        <h5 class="asociados"><strong>Módulos asociados:</strong></h5>
+                                        <hr style="margin:0px;">
+                                    </div>
                                     <div class="accordion-body">
-                                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                        <i class="bi bi-trash-fill text-danger pointer" 
-                                            data-bs-toggle="tooltip" 
-                                            data-bs-placement="right" 
-                                            title="Quitar perfil" 
-                                            style="font-size:large;"
-                                            on:click={()=>quitarPerfil(perfil.id_perfil,perfil.perfil_nombre)}>
-                                        </i>
                                         { #if tieneModulos }
                                             { #each rsModulos as modulo, i }
                                                 {#if perfil.id_perfil == modulo.id_perfil}
@@ -258,6 +270,9 @@
                                             </div>
                                         { /if }
                                     </div>
+                                    <div>
+                                        <h5 class="asociados2 shadow"><hr></h5>
+                                    </div>
                                 </div>
                             </div>
                         { /if }
@@ -278,23 +293,37 @@
         </div>
 
         <div class="input-group mb-3 bg-light barra-regresar">
-            <button class="btn btn-primary" type="button">Regresar</button>
+            <button class="btn btn-primary" type="button" on:click={ regresar }>Regresar</button>
         </div>
     </div>
 
     <Modal open={modAgregarPerfil} onClosed={(data) => resAgregarPerfil(data)}
-        title="Agregar registro:" 
-        saveButtonText="Guardar registro"
+        title="Agregar perfil:" 
+        saveButtonText="Agregar perfil"
         closeButtonText="Cancelar">
-
+        <table class="table">
+            <thead>
+                <tr>
+                    <td><strong>PERFILES DISPONIBLES</strong></td>
+                </tr>
+            </thead>
+            <tbody>
+                {#each rsPerfilesDisponibles as disponible, i}
+                    <tr class="pointer { disponibleSeleccionado == disponible.id_perfil ? 'seleccionado' : ''} sobre" 
+                    on:click={ ()=> disponibleSeleccionado = disponible.id_perfil }>
+                        <td>{ disponible.perfil_nombre }</td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
     </Modal>
-    
+
     <Modal open={modQuitarPerfil} onClosed={(data) => resQuitarPerfil(data)}
         title="Quitar perfil: {perfil_nombre}" 
         saveButtonText="Quitar el perfil" 
         closeButtonText="Cancelar">
         <div>
-            <p class="bg-danger text-light text-center" style="border-radius:15px;">Al quitar el perfil también se desasociarán los módulos de dicho perfil asignados al usuario.</p>
+            <p class="bg-danger text-light text-center" style="border-radius:15px;">También se quitarán los módulos del perfil asociados al usuario.</p>
         </div>
     </Modal>
 
@@ -311,6 +340,34 @@
 </main>
 
 <style>
+    .accordion-body {
+        padding-bottom: 0px;
+    }
+    .asociados2 {
+        background-color: var(--blue-100);
+        height: 1rem;
+        border-radius: 0 0 15px 15px;
+        margin-bottom: 1rem;
+    }
+    .asociados {
+        text-align: center;
+        margin: 10px 0 0 0;
+        background-color: var(--blue-100);
+        border-radius: 15px 15px 0 0;
+    }
+    .quitar {
+        text-align: center;
+        background-color: var(--rojo-3);
+        margin-left: 40%;
+        margin-right: 40%;
+        border-radius: 0 0 15px 15px;
+        color: var(--light);
+        text-transform: uppercase;
+    }
+    .seleccionado, .sobre:hover {
+        background-color: var(--amarillo-anaranjado-1) !important;
+        color: var(--dark) !important;
+    }
     .navs {
         display: grid;
     }
