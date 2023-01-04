@@ -76,55 +76,28 @@
     }
     main()
 
-    // AGREGAR REGISTRO
+    // AGREGAR PERFIL
     let perfil_nombre = ''
     let perfil_descripcion = ''
     let modAgregarPerfil = false
     const agregarPerfil = () => {
-        perfil_nombre = ''
-        perfil_descripcion = ''
-        perfil_nombreValido = false
         modAgregarPerfil = true
     }
 
     const resAgregarPerfil = async (data) => {
-        perfil_nombre = perfil_nombre.trim()
-        perfil_descripcion = perfil_descripcion.trim()
         modAgregarPerfil = false
         if (data == 'save'){
-            if ( perfil_nombreValido ) {
-                try {
-                    spinner = true
-                    const rs = await axios.post(Lugar.backend+'agregar_usuarios_perfil.php', {
-                        fk_id_usuario: sessionStorage.getItem( 'id_usuario_p'),
-                        fk_id_perfil: id_perfil,
-                    })
-                    spinner = false
-                    main()
-                } catch (e) {}
-            } else {
-                Swal.fire({icon: 'error',title: 'Faltan datos',text: 'El nombre del perfil debe ser válido.'})
-            }
+            try {
+                spinner = true
+                const rs = await axios.post(Lugar.backend+'agregar_usuarios_perfil.php', {
+                    fk_id_usuario: sessionStorage.getItem( 'id_usuario_p'),
+                    fk_id_perfil: id_perfil,
+                })
+                spinner = false
+                main()
+            } catch (e) {}
         }
 	}
-
-    let perfil_nombreValido = true
-    const validarPerfilNombre = () => {
-        if ( perfil_nombre.length > 2 ) {
-            perfil_nombreValido = true
-        } else {
-            perfil_nombreValido = false
-        }
-    }
-
-    let perfil_descripcionValida = true
-    const validarDescripcion = () => {
-        if ( perfil_descripcion.length > 2 ) {
-            perfil_descripcionValida = true
-        } else {
-            perfil_descripcionValida = false
-        }
-    }
 
     // QUITAR PERFIL
     let modQuitarPerfil = false
@@ -313,22 +286,15 @@
         title="Agregar registro:" 
         saveButtonText="Guardar registro"
         closeButtonText="Cancelar">
-        <div class="input-group mb-1">
-            <span class="input-group-text"><strong>Perfil:*</strong></span>
-            <input type="text" class="form-control" bind:value={perfil_nombre} on:input={validarPerfilNombre}>
-        </div>
-        <div class="input-group mb-1">
-            <span class="input-group-text"><strong>Descripción del perfil:*</strong></span>
-            <input type="text" class="form-control" bind:value={perfil_descripcion} on:input={validarDescripcion}>
-        </div>
+
     </Modal>
     
     <Modal open={modQuitarPerfil} onClosed={(data) => resQuitarPerfil(data)}
         title="Quitar perfil: {perfil_nombre}" 
         saveButtonText="Quitar el perfil" 
         closeButtonText="Cancelar">
-        <div class="d-flex justify-content-center">
-            <p class="input-group-text">Al quitar el perfil se desasociarán los módulos asignados al mismo.</p>
+        <div>
+            <p class="bg-danger text-light text-center" style="border-radius:15px;">Al quitar el perfil también se desasociarán los módulos de dicho perfil asignados al usuario.</p>
         </div>
     </Modal>
 
