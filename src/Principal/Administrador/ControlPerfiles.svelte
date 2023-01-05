@@ -1,13 +1,14 @@
 <script>
     // LIBRERIAS O COMPONENTES CON VARIABLE EXTRA
-    import Spinner from "../../Componentes/Spinner.svelte";
+    import Spinner from "../../Componentes/Spinner.svelte"
     let spinner = false
     
     // LIBRERIAS O COMPONENTES SIN VARIABLE EXTRA
     import axios from "axios"
     import Lugar from "../../lugares"
-    import Modal from "../../Componentes/Modal.svelte";
+    import Modal from "../../Componentes/Modal.svelte"
     import Swal from "sweetalert2"
+    import { push } from "svelte-spa-router"
     
     // PAGINADOR
     let maxRegsPP = 10
@@ -304,7 +305,7 @@
                                             <i class="bi bi-pencil-fill text-warning" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
-                                                title="Editar registro" 
+                                                title="Editar perfil" 
                                                 style="font-size:large;"
                                                 on:click={()=>editarRegistro(registro.id_perfil,registro.perfil_nombre)}>
                                             </i>
@@ -312,7 +313,7 @@
                                             <i class="bi bi-trash-fill text-danger" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
-                                                title="Eliminar registro" 
+                                                title="Eliminar perfil" 
                                                 style="font-size:large;"
                                                 on:click={()=>eliminarRegistro(registro.id_perfil,registro.perfil_nombre)}>
                                             </i>
@@ -368,7 +369,7 @@
         </div>
 
         <div class="input-group mb-3 bg-light barra-regresar">
-            <button class="btn btn-primary" type="button">Regresar</button>
+            <button class="btn btn-primary" type="button" on:click={ ()=> push( "/Tablero" ) }>Regresar</button>
         </div>
     </div>
 
@@ -384,17 +385,17 @@
 
     <Modal open={modEditarRegistro} onClosed={(data) => resEditarRegistro(data)}
         title="Editar registro:" 
-        saveButtonText="Guardar registro" 
+        saveButtonText="Guardar perfil" 
         closeButtonText="Cancelar">
         <div class="input-group mb-3">
-            <span class="input-group-text"><strong>Menú:*</strong></span>
+            <span class="input-group-text"><strong>Perfil:*</strong></span>
             <input type="text" class="form-control" bind:value={perfil_nombre} on:input={validarperfil_Nombre}>
         </div>
     </Modal>
 
     <Modal open={modEliminarRegistro} onClosed={(data) => resEliminarRegistro(data)}
         title="Eliminar registro:" 
-        saveButtonText="Eliminar registro" 
+        saveButtonText="Eliminar perfil" 
         closeButtonText="Cancelar">
         <h3 class="text-center">¿Eliminar el siguiente menú?</h3>
         <p class="text-center text-primary"><strong>{perfil_nombre}</strong></p>

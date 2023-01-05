@@ -500,7 +500,7 @@
         </div>
 
         <div class="input-group mb-3 bg-light barra-regresar">
-            <button class="btn btn-primary" type="button">Regresar</button>
+            <button class="btn btn-primary" type="button" on:click={ ()=> push( "/Tablero") }>Regresar</button>
         </div>
     </div>
 

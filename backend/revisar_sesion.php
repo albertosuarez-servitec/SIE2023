@@ -15,6 +15,7 @@
         $dbGenerales = $sqlGenerales->fetch_assoc();
         $duracion_sesion_minutos = $dbGenerales['duracion_sesion'];
         $duracion_sesion_segundos = $duracion_sesion_minutos * 60;
+        $tiempo_restante = $duracion_sesion_segundos - $tiempo_transcurrido;
         if ( $tiempo_transcurrido > $duracion_sesion_segundos ) {
             $en_sesion_previa = false;
         } else {
@@ -24,6 +25,6 @@
         $en_sesion_previa = false;
     }
     
-    echo json_encode(array("en_sesion_previa"=>$en_sesion_previa));
+    echo json_encode(array("en_sesion_previa"=>$en_sesion_previa,"tiempo_restante"=>$tiempo_restante));
     DB::dbDisconnect();
 ?>

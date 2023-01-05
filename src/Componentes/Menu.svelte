@@ -1,20 +1,21 @@
 <script>
     // @ts-nocheck
     // LIBRERIAS O COMPONENTES CON VARIABLE EXTRA
-    import Spinner from "../Componentes/Spinner.svelte";
+    import Spinner from "../Componentes/Spinner.svelte"
     let spinner = false
 
     // LIBRERIAS O COMPONENTES SIN VARIABLE EXTRA
     import { push, location } from 'svelte-spa-router'
     import Lugar from "../lugares"
-    import Modal from "../Componentes/Modal.svelte";
+    import Modal from "../Componentes/Modal.svelte"
     import Swal from "sweetalert2"
-    import axios from "axios";
+    import axios from "axios"
 
     // SESIÓN ACTIVA
     let usuarioActual_nombre = ''
     let usuarioActual_id = ''
     let enSesion = false
+    let tiempoRestante = 0
     const sesion = async () => {
         if ( !(sessionStorage.getItem( 'token' ) === null )) {
             try {
@@ -28,13 +29,53 @@
                     usuarioActual_nombre = sessionStorage.getItem( 'nombreCompleto' )
                     usuarioActual_id = sessionStorage.getItem( 'id_usuario' )
                     enSesion = true
+                    tiempoRestante = rs.data.tiempo_restante
+                    temporizadorSesion(tiempoRestante)
                 } else {
                     sessionStorage.clear()
+                    push("/")
                 }
+
             } catch (e) {}
         } 
     }
     sesion()
+
+    // SESION
+    let modSesion = false
+    let tiempoSesion
+    let cerrarSesionAuto
+
+    const avisoSesion = () => {
+        modSesion = true
+        cerrarSesionAuto = setTimeout(cerrarSesion,60000)
+    }
+
+    const resModSesion = (data) => {
+        if ( data == 'save' ) {
+            extenderSesion()
+        } else if ( data == 'cancel' || data == 'close' ) {
+            cerrarSesion()
+        }
+    }
+
+    const temporizadorSesion = (tiempo) => {
+        modSesion = false
+        tiempoSesion = setTimeout(avisoSesion, tiempo - 60000);
+    }
+
+    const extenderSesion = async () => {
+        clearTimeout(cerrarSesionAuto)
+        modSesion = false
+        try {
+            spinner = true
+            const rs = await axios.post(Lugar.backend+'extender_sesion.php',{
+                id_usuario: sessionStorage.getItem('id_usuario')
+            })
+            spinner = false
+        } catch (e) {}
+        sesion()
+    }
 
     // CAMBIO EN MENÚ
     let ubicacion = window.location.hash
@@ -241,6 +282,7 @@
 
     // CERRAR SESION
     const cerrarSesion = async () => {
+        modSesion = false
         try {
             spinner = true
             const rs = await axios.post(Lugar.backend+'cerrar_sesion.php',{
@@ -302,10 +344,17 @@
 
     // DEBUG
     let debug = false
+
 </script>
 
 <main>
-
+    {#if debug}
+        <div class="debug">
+            <div class="input-group mb-1">
+                <span class="input-group-text">debug</span><input type="text" class="form-control" bind:value={debug}>
+            </div>
+        </div>
+    {/if}
     <nav class="navbar navbar-expand-lg bg-amarillo-1">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -332,7 +381,7 @@
                       <span ><img class="foto" src={Lugar.fotos+sessionStorage.getItem( 'foto' )} alt="" style="border-radius:50%;"></span>
                     </button>
                     <ul class="dropdown-menu bg-azul-3">
-                      <li><button class="dropdown-item btn-azul-3" on:click={cerrarSesion}>Cerrar sesión</button></li>
+                      <li><button class="dropdown-item btn-azul-3" on:click={cerrarSesion}>Cerrar sesión { tiempoRestante }</button></li>
                     </ul>
                   </div>
             {:else}
@@ -443,13 +492,12 @@
         {/if}
     </Modal>
 
-    {#if debug}
-        <div class="debug">
-            <div class="input-group mb-1">
-                <span class="input-group-text">foto</span><input type="text" class="form-control" bind:value={foto}>
-            </div>
-        </div>
-    {/if}
+    <Modal open={modSesion} onClosed={(data) => resModSesion(data)}
+        title="Cerrar sesión:" 
+        saveButtonText="Extender sesión" 
+        closeButtonText="Cerrar sesión">
+        <h5 class="text-center">La sesión se cerrará en un minuto por falta de actividad, ¿desea extenderla?</h5>
+    </Modal>
 </main>
 
 <style>
