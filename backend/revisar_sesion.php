@@ -14,7 +14,7 @@
         $sqlGenerales = DB::runQuery( $query );
         $dbGenerales = $sqlGenerales->fetch_assoc();
         $duracion_sesion_minutos = $dbGenerales['duracion_sesion'];
-        $duracion_sesion_segundos = $duracion_sesion_minutos * 60;
+        $duracion_sesion_segundos = $duracion_sesion_minutos * 60 * 1000;
         $tiempo_restante = $duracion_sesion_segundos - $tiempo_transcurrido;
         if ( $tiempo_transcurrido > $duracion_sesion_segundos ) {
             $en_sesion_previa = false;

@@ -40,7 +40,9 @@
                     sessionStorage.clear()
                 }
             } catch (e) {}
-        } 
+        } else {
+            push("/")
+        }
     }
     sesion()
 

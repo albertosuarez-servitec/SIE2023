@@ -5,7 +5,7 @@
     let spinner = false
 
     // LIBRERIAS O COMPONENTES SIN VARIABLE EXTRA
-    import { push, location } from 'svelte-spa-router'
+    import { push } from 'svelte-spa-router'
     import Lugar from "../lugares"
     import Modal from "../Componentes/Modal.svelte"
     import Swal from "sweetalert2"
@@ -37,7 +37,9 @@
                 }
 
             } catch (e) {}
-        } 
+        } else {
+            sessionStorage.clear()
+        }
     }
     sesion()
 
@@ -343,7 +345,7 @@
     };
 
     // DEBUG
-    let debug = false
+    let debug = true
 
 </script>
 
@@ -351,7 +353,7 @@
     {#if debug}
         <div class="debug">
             <div class="input-group mb-1">
-                <span class="input-group-text">debug</span><input type="text" class="form-control" bind:value={debug}>
+                <span class="input-group-text">tiempoRestante</span><input type="text" class="form-control" bind:value={tiempoRestante}>
             </div>
         </div>
     {/if}
@@ -497,6 +499,7 @@
         saveButtonText="Extender sesión" 
         closeButtonText="Cerrar sesión">
         <h5 class="text-center">La sesión se cerrará en un minuto por falta de actividad, ¿desea extenderla?</h5>
+        <p>{tiempoRestante}</p>
     </Modal>
 </main>
 
