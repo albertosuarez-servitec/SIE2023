@@ -44,7 +44,6 @@
         modulos.id_modulo, 
         modulos.modulo_nombre, 
         modulos.modulo_orden, 
-        modulos.modulo_titulo, 
         modulos.modulo_descripcion, 
         modulos.modulo_pagina, 
         modulos.modulo_activo, 
@@ -79,7 +78,6 @@
             $rsModulos[$i]['id_perfil']           = $fila['id_perfil'];
             $rsModulos[$i]['id_modulo']           = $fila['id_modulo'];
             $rsModulos[$i]['modulo_nombre']       = utf8_decode(utf8_encode( $fila['modulo_nombre'] ));
-            $rsModulos[$i]['modulo_titulo']       = utf8_decode(utf8_encode( $fila['modulo_titulo'] ));
             $rsModulos[$i]['modulo_descripcion']  = utf8_decode(utf8_encode( $fila['modulo_descripcion'] ));
             $rsModulos[$i]['modulo_pagina']       = utf8_decode(utf8_encode( $fila['modulo_pagina'] ));
             $rsModulos[$i]['modulo_activo']       = entero2buleano( $fila['modulo_activo'] );

@@ -93,7 +93,9 @@
                                          <div class="card-body body-modulo">
                                              <h5 class="card-title"><strong>{ modulo.modulo_nombre }</strong></h5>
                                              <p class="card-text text-modulo">{ modulo.modulo_descripcion }</p>
-                                             <button class="btn btn-primary abrir-modulo" on:click={ ()=> push( "/"+modulo.modulo_pagina ) }>Abrir módulo</button>
+                                             <div class="d-grid gap-2">
+                                                 <button class="btn btn-azul-5 abrir-modulo" on:click={ ()=> push( "/"+modulo.modulo_pagina ) }>Abrir módulo</button>
+                                             </div>
                                          </div>
                                      </div>
                                  </div>

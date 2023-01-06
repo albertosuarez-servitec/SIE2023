@@ -283,10 +283,10 @@
         }
 	}
 
-    // PERFIL USUARIO
+    // PERFILES DEL USUARIO
     const perfilesUsuario = async (id_usuarioT, nombreCompletoT) => {
-        sessionStorage.setItem( 'id_usuario_p', id_usuarioT )
-        sessionStorage.setItem( 'nombreCompleto_p', nombreCompletoT)
+        sessionStorage.setItem( 'id_usuario_t', id_usuarioT )
+        sessionStorage.setItem( 'nombreCompleto_t', nombreCompletoT)
         push( '/PerfilesUsuario' )
     }
 

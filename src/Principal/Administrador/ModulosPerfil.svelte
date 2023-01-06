@@ -19,9 +19,9 @@
     let registroFinal = 10
     let residuo = 0
     let pagAd = 0
-    let rsPerfiles = []
+    // let rsPerfiles = []
     let rsModulos = []
-    let rsPerfilesDisponibles = []
+    let rsModulosDisponibles = []
     
     const cambiarMaxRegsPP = () => {
         paginas = Math.floor( rsPerfiles.length / maxRegsPP )
@@ -44,14 +44,14 @@
     }
 
     // RECORDSET INICIAL
-    let filtro = ''
-    let tienePerfiles = false
+    // let filtro = ''
+    // let tienePerfiles = false
     let tieneModulos = false
-    let tienePerfilesDisponibles = false
+    let tieneModulosDisponibles = false
     const main = async () => {
         try {
             spinner = true
-                const rs = await axios.post(Lugar.backend+'perfiles_usuario.php',{
+                const rs = await axios.post(Lugar.backend+'modulos_perfil.php',{
                     filtro: filtro,
                     id_usuario: sessionStorage.getItem( 'id_usuario_t')
                 })
@@ -84,7 +84,7 @@
     }
     main()
 
-    // AGREGAR PERFIL
+    // AGREGAR MÓDULO
     let perfil_nombre = ''
     let perfil_descripcion = ''
     let modAgregarPerfil = false
@@ -161,12 +161,12 @@
     <div class="barra bg-light">
         <div class="row">
             <div class="col-6 col-lg-8 col-xxl-9">
-                <div class="input-group mb-3 barra-filtrar ">
+                <!-- <div class="input-group mb-3 barra-filtrar ">
                     <span class="input-group-text"><strong>Filtrar:</strong></span>
                     <input type="text" class="form-control" placeholder="Escriba para filtrar" bind:value={filtro}>
                     <button class="btn btn-outline-success" on:click={limpiarFiltro}>Limpiar</button>
                     <button class="btn btn-outline-success" on:click={main}>Buscar</button>
-                </div>
+                </div> -->
             </div>
             <div class="col-6 col-lg-4 col-xxl-3">
                 <div class="input-group mb-3 barra-paginador bg-light">
@@ -187,7 +187,7 @@
                 </div>
             </div>
             <div class="col-6 col-lg-4 col-xxl-3 navs">
-                {#if tienePerfiles }
+                {#if tieneModulos }
                     <div class="input-group mb-3 barra-navPaginas">
                         <div role="group">
                             {#if paginaActual != 1}
@@ -224,8 +224,8 @@
         <div class="barra-registros">
 
             <div class="accordion" id="acordeonPerfil">
-                { #if tienePerfiles }
-                    { #each rsPerfiles as perfil, i }
+                { #if tieneModulos }
+                    { #each rsModulos as perfil, i }
                         { #if perfil.numero >= registroInicial && perfil.numero <= registroFinal }
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading{i+1}">
@@ -308,7 +308,7 @@
                 </tr>
             </thead>
             <tbody>
-                {#each rsPerfilesDisponibles as disponible, i}
+                {#each rsModulosDisponibles as disponible, i}
                     <tr class="pointer { disponibleSeleccionado == disponible.id_perfil ? 'seleccionado' : ''} sobre" 
                     on:click={ ()=> disponibleSeleccionado = disponible.id_perfil }>
                         <td>{ disponible.perfil_nombre }</td>

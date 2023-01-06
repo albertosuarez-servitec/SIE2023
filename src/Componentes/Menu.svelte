@@ -89,8 +89,8 @@
     // ENTRAR
     let modEntrar = false
     let foto = ''
-    let correo = 'alberto_suarez_v@encrym.edu.m'
-    let clave = '3Ruckt00'
+    let correo = ''
+    let clave = ''
     let verClave = false
     const entrar = async () => {
         modEntrar = true
@@ -378,12 +378,12 @@
             </ul>
             {#if usuarioActual_nombre != ''}
                  <div class="btn-group">
-                    <button type="button" class="btn btn-azul-5"><strong>{usuarioActual_nombre}</strong></button>
-                    <button type="button" class="btn btn-azul-3 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-azul-5 usuarioActual"><strong>{usuarioActual_nombre}</strong></button>
+                    <button type="button" class="btn btn-azul-3 dropdown-toggle dropdown-toggle-split fotoDrop" data-bs-toggle="dropdown" aria-expanded="false">
                       <span ><img class="foto" src={Lugar.fotos+sessionStorage.getItem( 'foto' )} alt="" style="border-radius:50%;"></span>
                     </button>
                     <ul class="dropdown-menu bg-azul-3">
-                      <li><button class="dropdown-item btn-azul-3" on:click={cerrarSesion}>Cerrar sesión { tiempoRestante }</button></li>
+                      <li><button class="dropdown-item btn-azul-3" on:click={cerrarSesion}>Cerrar sesión</button></li>
                     </ul>
                   </div>
             {:else}
@@ -504,6 +504,12 @@
 </main>
 
 <style>
+    .fotoDrop {
+        border-radius: 0 15px 15px 0;
+    }
+    .usuarioActual {
+        border-radius: 15px 0 0 15px;
+    }
     .foto {
         width: 30px;
     }

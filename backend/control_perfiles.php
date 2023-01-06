@@ -32,18 +32,18 @@
         $resultado = DB::runQuery( $query );
     }
 
-    $tieneRegistros = false;
-    $rsRegistros = [];
+    $tienePerfiles = false;
+    $rsPerfiles = [];
     if ( $resultado->num_rows !== 0 ) {
-        $tieneRegistros = true;
+        $tienePerfiles = true;
         $i=1;
         while ($fila = $resultado->fetch_assoc()) {
-            $rsRegistros[$i]['numero']              = $i;
-            $rsRegistros[$i]['id_perfil']           = $fila['id_perfil'];
-            $rsRegistros[$i]['perfil_nombre']       = utf8_decode(utf8_encode( $fila['perfil_nombre'] ));
-            $rsRegistros[$i]['perfil_descripcion']  = utf8_decode(utf8_encode( $fila['perfil_descripcion'] ));
-            $rsRegistros[$i]['perfil_activo']      = entero2buleano( $fila['perfil_activo'] );
-            $rsRegistros[$i]['perfil_orden']          = intval( $fila['perfil_orden'] );
+            $rsPerfiles[$i]['numero']              = $i;
+            $rsPerfiles[$i]['id_perfil']           = $fila['id_perfil'];
+            $rsPerfiles[$i]['perfil_nombre']       = utf8_decode(utf8_encode( $fila['perfil_nombre'] ));
+            $rsPerfiles[$i]['perfil_descripcion']  = utf8_decode(utf8_encode( $fila['perfil_descripcion'] ));
+            $rsPerfiles[$i]['perfil_activo']      = entero2buleano( $fila['perfil_activo'] );
+            $rsPerfiles[$i]['perfil_orden']          = intval( $fila['perfil_orden'] );
             $i++;
         }
         $query = "SELECT MIN(perfiles.perfil_orden) as minimo_orden, MAX(perfiles.perfil_orden) as maximo_orden FROM perfiles";
@@ -52,5 +52,5 @@
         $minimo_orden = intval($db['minimo_orden']);
         $maximo_orden = intval($db['maximo_orden']);
     }
-    echo json_encode(array("tieneRegistros"=>$tieneRegistros,"rsRegistros"=>$rsRegistros,"minimo_orden"=>$minimo_orden,"maximo_orden"=>$maximo_orden))
+    echo json_encode(array("tienePerfiles"=>$tienePerfiles,"rsPerfiles"=>$rsPerfiles,"minimo_orden"=>$minimo_orden,"maximo_orden"=>$maximo_orden))
 ?>

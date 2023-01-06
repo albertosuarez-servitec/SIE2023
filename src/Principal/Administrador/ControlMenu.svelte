@@ -8,6 +8,7 @@
     import Lugar from "../../lugares"
     import Modal from "../../Componentes/Modal.svelte";
     import Swal from "sweetalert2"
+    import { push } from "svelte-spa-router";
     
     // PAGINADOR
     let maxRegsPP = 10
@@ -196,7 +197,7 @@
     const bajar = async (id_menuT,menu_ordenT) => {
         try {
             spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_orden.php',{
+            const rs = await axios.post(Lugar.backend+'cambiar_orden_menu.php',{
                 id_menu: id_menuT,
                 menu_orden: menu_ordenT,
                 direccion: 'b'
@@ -209,7 +210,7 @@
     const subir = async (id_menuT,menu_ordenT) => {
         try {
             spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_orden.php',{
+            const rs = await axios.post(Lugar.backend+'cambiar_orden_menu.php',{
                 id_menu: id_menuT,
                 menu_orden: menu_ordenT,
                 direccion: 's'
@@ -391,7 +392,7 @@
         </div>
 
         <div class="input-group mb-3 bg-light barra-regresar">
-            <button class="btn btn-primary" type="button">Regresar</button>
+            <button class="btn btn-primary" type="button" on:click={ ()=> push( '/Tablero' ) }>Regresar</button>
         </div>
     </div>
 
