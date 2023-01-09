@@ -329,10 +329,10 @@
                                                 on:click={()=>eliminarPerfil(perfil.id_perfil,perfil.perfil_nombre)}>
                                             </i>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <i class="bi bi-person-lines-fill text-success pointer" 
+                                            <i class="bi bi-card-checklist text-success pointer" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
-                                                title="Perfiles de usuario" 
+                                                title="Módulos del perfil" 
                                                 style="font-size:large;"
                                                 on:click={()=>modulosPerfil(perfil.id_perfil, perfil.perfil_nombre)}>
                                             </i>

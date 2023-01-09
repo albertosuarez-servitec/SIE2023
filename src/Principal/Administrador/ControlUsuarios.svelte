@@ -283,12 +283,36 @@
         }
 	}
 
+    // ELIMINAR USUARIO
+    let modTipos = false
+    const rolesUsuario = async (id_usuarioT, nombreCompletoT) => {
+        id_usuario = id_usuarioT
+        nombreCompleto = nombreCompletoT
+        modTipos = true
+    }
+
+    const resRolesUsuario = async (data) => {
+        modTipos = false
+        if (data == 'save'){
+            try {
+                spinner = true
+                const rs = await axios.post(Lugar.backend+'eliminar_registro_usuarios.php',{
+                    id_usuario: id_usuario
+                })
+                spinner = false
+            } catch (e) {}
+            main()
+        }
+	}
+
     // PERFILES DEL USUARIO
     const perfilesUsuario = async (id_usuarioT, nombreCompletoT) => {
         sessionStorage.setItem( 'id_usuario_t', id_usuarioT )
         sessionStorage.setItem( 'nombreCompleto_t', nombreCompletoT)
         push( '/PerfilesUsuario' )
     }
+
+
 
     // FUNCIONES GENERALES
     const limpiarFiltro = () => {
@@ -412,7 +436,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Acciones</th>
                         <th scope="col">Nombre completo</th>
-                        <th scope="col">Usuario</th>
+                        <th class="text-center" scope="col">Roles</th>
                         <th scope="col">Correo electrónico</th>
                         <th class="text-center" scope="col">Debe cambiar clave</th>
                         <th class="text-center" scope="col">Bloqueado</th>
@@ -460,10 +484,22 @@
                                                 style="font-size:large;"
                                                 on:click={()=>perfilesUsuario(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
                                             </i>
+                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                            <i class="bi bi-people-fill text-info pointer" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="right" 
+                                                title="Roles de usuario" 
+                                                style="font-size:large;"
+                                                on:click={()=>rolesUsuario(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
+                                            </i>
                                         </div>
                                     </th>
                                     <td             >{registro.nombres} {registro.primer_apellido} {registro.segundo_apellido}</td>
-                                    <td             >{registro.usuario}</td>
+                                    <td class="text-center">
+                                        <img src="/public/a.png" alt="" style="height:.9rem;" data-bs-toggle="tooltip" data-bs-placement="right" title="Administrativo">
+                                        <img src="/public/d.png" alt="" style="height:.9rem;" data-bs-toggle="tooltip" data-bs-placement="right" title="Docente">
+                                        <img src="/public/e.png" alt="" style="height:.9rem;" data-bs-toggle="tooltip" data-bs-placement="right" title="Estudiante">
+                                    </td>
                                     <td             >{registro.correo}</td>
                                     <td class="debeCambiarClave">
                                         <div class="form-check form-switch d-flex justify-content-center">

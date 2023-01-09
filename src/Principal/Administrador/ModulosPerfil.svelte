@@ -19,13 +19,12 @@
     let registroFinal = 10
     let residuo = 0
     let pagAd = 0
-    // let rsPerfiles = []
     let rsModulos = []
     let rsModulosDisponibles = []
     
     const cambiarMaxRegsPP = () => {
-        paginas = Math.floor( rsPerfiles.length / maxRegsPP )
-        residuo = ( rsPerfiles.length % maxRegsPP )
+        paginas = Math.floor( rsModulos.length / maxRegsPP )
+        residuo = ( rsModulos.length % maxRegsPP )
         if ( residuo > 0 ) {
             pagAd = 1
         } else {
@@ -44,23 +43,20 @@
     }
 
     // RECORDSET INICIAL
-    // let filtro = ''
-    // let tienePerfiles = false
     let tieneModulos = false
     let tieneModulosDisponibles = false
     const main = async () => {
         try {
             spinner = true
                 const rs = await axios.post(Lugar.backend+'modulos_perfil.php',{
-                    filtro: filtro,
-                    id_usuario: sessionStorage.getItem( 'id_usuario_t')
+                    id_perfil: sessionStorage.getItem( 'id_perfil_t')
                 })
             spinner = false
-            if ( rs.data.tienePerfiles ) {
-                tienePerfiles = true
-                rsPerfiles = Object.values(rs.data.rsPerfiles)
-                paginas = Math.floor( rsPerfiles.length / maxRegsPP )
-                residuo = ( rsPerfiles.length % maxRegsPP )
+            if ( rs.data.tieneModulos ) {
+                tieneModulos = true
+                rsModulos = Object.values(rs.data.rsModulos)
+                paginas = Math.floor( rsModulos.length / maxRegsPP )
+                residuo = ( rsModulos.length % maxRegsPP )
                 if ( residuo > 0 ) {
                     pagAd = 1
                 } else {
@@ -70,37 +66,32 @@
                 paginaActual = 1
                 registroInicial = 1
                 registroFinal = maxRegsPP
-                if ( rs.data.tieneModulos ) {
-                    tieneModulos = true
-                    rsModulos = Object.values(rs.data.rsModulos)
-                }
             }
-            if ( rs.data.tienePerfilesDisponibles ) {
-                tienePerfilesDisponibles = true
-                rsPerfilesDisponibles = Object.values(rs.data.rsPerfilesDisponibles)
-                console.log(rsPerfilesDisponibles)
+            if ( rs.data.tieneModulosDisponibles ) {
+                tieneModulosDisponibles = true
+                rsModulosDisponibles = Object.values(rs.data.rsModulosDisponibles)
+                console.log(rsModulosDisponibles)
             }
         } catch (e) {}
     }
     main()
 
     // AGREGAR MÓDULO
-    let perfil_nombre = ''
-    let perfil_descripcion = ''
-    let modAgregarPerfil = false
+    let modulo_nombre = ''
+    let modAgregarModulo = false
     let disponibleSeleccionado = 0
-    const agregarPerfil = () => {
-        modAgregarPerfil = true
+    const agregarModulo = () => {
+        modAgregarModulo = true
     }
 
-    const resAgregarPerfil = async (data) => {
-        modAgregarPerfil = false
+    const resAgregarModulo = async (data) => {
+        modAgregarModulo = false
         if (data == 'save'){
             try {
                 spinner = true
-                const rs = await axios.post(Lugar.backend+'agregar_usuarios_perfil.php', {
-                    fk_id_usuario: sessionStorage.getItem( 'id_usuario_t'),
-                    fk_id_perfil: disponibleSeleccionado
+                const rs = await axios.post(Lugar.backend+'agregar_perfiles_modulos.php', {
+                    fk_id_perfil: sessionStorage.getItem( 'id_perfil_t'),
+                    fk_id_modulo: disponibleSeleccionado
                 })
                 spinner = false
                 main()
@@ -109,25 +100,25 @@
 	}
 
     // QUITAR PERFIL
-    let modQuitarPerfil = false
-    let id_usuario = 0
+    let modQuitarModulo = false
     let id_perfil = 0
-    const quitarPerfil = async (id_perfilT, perfil_nombreT) => {
-        id_usuario = parseInt(sessionStorage.getItem('id_usuario_t'))
-        id_perfil = id_perfilT
-        perfil_nombre = perfil_nombreT
-        modQuitarPerfil = true
+    let id_modulo = 0
+    const quitarModulo = async (id_moduloT, modulo_nombreT) => {
+        id_perfil = parseInt(sessionStorage.getItem('id_perfil_t'))
+        id_modulo = id_moduloT
+        modulo_nombre = modulo_nombreT
+        modQuitarModulo = true
     }
 
     const resQuitarPerfil = async (data) => {
-        modQuitarPerfil = false
+        modQuitarModulo = false
         console.log(data)
         if (data == 'save'){
             try {
                 spinner = true
-                const rs = await axios.post(Lugar.backend+'quitar_perfil_usuario.php', {
-                    id_usuario: id_usuario,
-                    id_perfil: id_perfil
+                const rs = await axios.post(Lugar.backend+'quitar_perfiles_modulos.php', {
+                    fk_id_perfil: id_perfil,
+                    fk_id_modulo: id_modulo
                 })
                 spinner = false
             } catch (e) {}
@@ -138,13 +129,8 @@
     // FUNCIONES GENERALES
     const blackhole = () => {}
 
-    const limpiarFiltro = () => {
-        filtro = ''
-        main()
-    }
-
     const regresar = () => {
-        push('/ControlUsuarios')
+        push('/ControlPerfiles')
     }
 
     // DEBUG
@@ -183,7 +169,7 @@
         <div class="row">
             <div class="col-6 col-lg-8 col-xxl-9">
                 <div class="input-group mb-3 barra-acciones">
-                    <button class="btn btn-success" type="button" on:click={agregarPerfil}><i class="bi bi-plus-circle"></i> Agregar perfil</button>
+                    <button class="btn btn-success" type="button" on:click={agregarModulo}><i class="bi bi-plus-circle"></i> Agregar módulo</button>
                 </div>
             </div>
             <div class="col-6 col-lg-4 col-xxl-3 navs">
@@ -225,31 +211,31 @@
 
             <div class="accordion" id="acordeonPerfil">
                 { #if tieneModulos }
-                    { #each rsModulos as perfil, i }
-                        { #if perfil.numero >= registroInicial && perfil.numero <= registroFinal }
+                    { #each rsModulos as modulo, i }
+                        { #if modulo.numero >= registroInicial && modulo.numero <= registroFinal }
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading{i+1}">
                                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{i+1}" >
                                         <div class="row" style="width: 100%;">
                                             <div class="col-4 col-md-4 col-lg-3">
-                                                <strong>{ perfil.perfil_nombre }</strong>
+                                                <strong>{ modulo.modulo_nombre }</strong>
                                             </div>
                                             <div class="col-8 col-md-8 col-lg-9">
-                                                { perfil.perfil_descripcion }
+                                                { modulo.modulo_descripcion }
                                             </div>
                                         </div>
                                     </button>
                                 </h2>
                                 <div id="collapse{i+1}" class="accordion-collapse collapse {i==0?'show':''}" aria-labelledby="heading{i+1}" data-bs-parent="#acordeonPerfil">
-                                    <div class="quitar pointer shadow" on:keydown={blackhole} on:click={()=>quitarPerfil(perfil.id_perfil,perfil.perfil_nombre)}>Quitar perfil</div>
-                                    <div>
+                                    <div class="quitar pointer shadow" on:keydown={blackhole} on:click={()=>quitarModulo(modulo.id_modulo,modulo.modulo_nombre)}>Quitar modulo</div>
+                                    <!-- <div>
                                         <h5 class="asociados"><strong>Módulos asociados:</strong></h5>
                                         <hr style="margin:0px;">
-                                    </div>
+                                    </div> -->
                                     <div class="accordion-body">
-                                        { #if tieneModulos }
+                                        <!-- { #if tieneModulos }
                                             { #each rsModulos as modulo, i }
-                                                {#if perfil.id_perfil == modulo.id_perfil}
+                                                {#if modulo.id_perfil == modulo.id_perfil}
                                                     <div class="row">
                                                     <div class="col-4 col-md-4 col-lg-3">
                                                         <strong>{ modulo.modulo_nombre }</strong>
@@ -262,17 +248,17 @@
                                             { /each }
                                         { :else }
                                             <div class="card">
-                                                <!-- <img src="..." alt='...'> -->
+                                                <img src="..." alt='...'>
                                                 <div class="card-body">
                                                 <h5 class="card-title"><strong>Faltan datos</strong></h5>
-                                                <p class="card-text">No se encontraron módulos para este perfil en la base de datos.</p>
+                                                <p class="card-text">No se encontraron módulos para este modulo en la base de datos.</p>
                                                 </div>
                                             </div>
-                                        { /if }
+                                        { /if } -->
                                     </div>
-                                    <div>
+                                    <!-- <div>
                                         <h5 class="asociados2 shadow"><hr></h5>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         { /if }
@@ -297,33 +283,33 @@
         </div>
     </div>
 
-    <Modal open={modAgregarPerfil} onClosed={(data) => resAgregarPerfil(data)}
-        title="Agregar perfil:" 
-        saveButtonText="Agregar perfil"
+    <Modal open={modAgregarModulo} onClosed={(data) => resAgregarModulo(data)}
+        title="Agregar módulo:" 
+        saveButtonText="Agregar módulo"
         closeButtonText="Cancelar">
         <table class="table">
             <thead>
                 <tr>
-                    <td><strong>PERFILES DISPONIBLES</strong></td>
+                    <td><strong>MÓDULOS DISPONIBLES</strong></td>
                 </tr>
             </thead>
             <tbody>
                 {#each rsModulosDisponibles as disponible, i}
-                    <tr class="pointer { disponibleSeleccionado == disponible.id_perfil ? 'seleccionado' : ''} sobre" 
-                    on:click={ ()=> disponibleSeleccionado = disponible.id_perfil }>
-                        <td>{ disponible.perfil_nombre }</td>
+                    <tr class="pointer { disponibleSeleccionado == disponible.id_modulo ? 'seleccionado' : ''} sobre" 
+                    on:click={ ()=> disponibleSeleccionado = disponible.id_modulo }>
+                        <td>{ disponible.modulo_nombre }</td>
                     </tr>
                 {/each}
             </tbody>
         </table>
     </Modal>
 
-    <Modal open={modQuitarPerfil} onClosed={(data) => resQuitarPerfil(data)}
-        title="Quitar perfil: {perfil_nombre}" 
-        saveButtonText="Quitar el perfil" 
+    <Modal open={modQuitarModulo} onClosed={(data) => resQuitarPerfil(data)}
+        title="Quitar módulo: {modulo_nombre}" 
+        saveButtonText="Quitar el módulo" 
         closeButtonText="Cancelar">
         <div>
-            <p class="bg-danger text-light text-center" style="border-radius:15px;">También se quitarán los módulos del perfil asociados al usuario.</p>
+            <p class="bg-danger text-light text-center" style="border-radius:15px;">Los cambios al perfil se reflejarán en todos los usuarios.</p>
         </div>
     </Modal>
 
@@ -342,18 +328,6 @@
 <style>
     .accordion-body {
         padding-bottom: 0px;
-    }
-    .asociados2 {
-        background-color: var(--blue-100);
-        height: 1rem;
-        border-radius: 0 0 15px 15px;
-        margin-bottom: 1rem;
-    }
-    .asociados {
-        text-align: center;
-        margin: 10px 0 0 0;
-        background-color: var(--blue-100);
-        border-radius: 15px 15px 0 0;
     }
     .quitar {
         text-align: center;
