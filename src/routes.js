@@ -11,6 +11,7 @@ import ModulosPerfil from "./Principal/Administrador/ModulosPerfil.svelte";
 import ControlModulos from "./Principal/Administrador/ControlModulos.svelte";
 // Usuarios
 import Tablero from "./Principal/Usuario/Tablero.svelte";
+import CapturaAlumnos from "./Principal/Usuario/CapturaAlumnos.svelte";
 // Errores
 import Error404 from "./Errores/Error404.svelte";
 
@@ -28,6 +29,7 @@ const routes = {
         '/ControlModulos':  ControlModulos,     // Módulo
     // Usuarios
         '/Tablero': Tablero,
+        '/CapturaAlumnos': CapturaAlumnos,
     // Errores
         '*': Error404
 }

@@ -258,6 +258,8 @@
 
     const resRecuperarClave = async () => {
         modRecuperarClave = false
+        clave = ''
+        claveValida = false
         pasoRecuperarClave = 1
     }
 

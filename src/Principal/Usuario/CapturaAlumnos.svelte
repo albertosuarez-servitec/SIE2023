@@ -21,6 +21,7 @@
     let pagAd = 0
     let rsRegistros = []
     let rsRoles = []
+    let nombreCompleto = ''
     
     const cambiarMaxRegsPP = () => {
         paginas = Math.floor( rsRegistros.length / maxRegsPP )
@@ -45,11 +46,10 @@
     // RECORDSET INICIAL
     let filtro = ''
     let tieneRegistros = false
-    let tieneRoles = false
     const main = async () => {
         try {
             spinner = true
-                const rs = await axios.post(Lugar.backend+'control_usuarios.php',{
+                const rs = await axios.post(Lugar.backend+'captura_alumnos.php',{
                     filtro: filtro
                 })
             spinner = false
@@ -77,30 +77,6 @@
         }
     }
     main()
-
-    // CAMBIAR CLAVE
-    const cambiarCambiar_Clave = async (id_usuarioT, cambiar_claveT) => {
-        try {
-            spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_cambiar_clave.php',{
-                id_usuario: id_usuarioT,
-                cambiar_clave: cambiar_claveT
-            })
-            spinner = false
-        } catch (e) {}
-    }
-
-    // BLOQUEO
-    const cambiarBloqueo = async (id_usuarioT, bloqueoT) => {
-        try {
-            spinner = true
-            const rs = await axios.post(Lugar.backend+'cambiar_bloqueo.php',{
-                id_usuario: id_usuarioT,
-                bloqueo: bloqueoT
-            })
-            spinner = false
-        } catch (e) {}
-    }
 
     // AGREGAR REGISTRO
     let id_usuario = 0
@@ -185,28 +161,6 @@
         }
     }
 
-    let codigoValido = true
-    const validarCodigo = () => {
-        codigo = numerosSinCero(codigo)
-        if ( codigo.length > 6 ) {
-            codigo = codigo.substring(0,6)
-        }
-        if ( codigo.length == 6 ) {
-            codigoValido = true
-        } else {
-            codigoValido = false
-        }
-    }
-
-    let claveValida = false
-    const validarClave = () => {
-        if ( clave.length > 2 ) {
-            claveValida = true
-        } else {
-            claveValida = false
-        }
-    }
-
     const resEditarRegistro = async (data) => {
         nombres = nombres.trim()
         primer_apellido = primer_apellido.trim()
@@ -234,37 +188,6 @@
         }
 	}
 
-    // CAMBIAR CLAVE
-    let modCambiarClave = false
-    let clave = ''
-    let nombreCompleto = ''
-    const cambiarClave = async (id_usuarioT, nombreCompletoT) => {
-        id_usuario = id_usuarioT
-        nombreCompleto = nombreCompletoT
-        clave = ''
-        claveValida = false
-        modCambiarClave = true
-    }
-
-    const resCambiarClave = async (data) => {
-        modCambiarClave = false
-        if (data == 'save'){
-            if ( claveValida ) {
-                try {
-                    spinner = true
-                    const rs = await axios.post(Lugar.backend+'cambiar_clave_usuario.php',{
-                        id_usuario: id_usuario,
-                        usuario_clave: clave
-                    })
-                    spinner = false
-                } catch (e) {}
-                main()
-            } else {
-                Swal.fire({icon: 'error',title: 'Error en la clave',text: 'La clave que escribió no es válida.'})
-            }
-        }
-	}
-
     // ELIMINAR USUARIO
     let modEliminarUsuario = false
     const eliminarUsuario = async (id_usuarioT, nombreCompletoT) => {
@@ -287,127 +210,10 @@
         }
 	}
 
-    // ROL ADMINISTRATIVO
-    let administrativo_activo = false
-    let modRolAdministrativo = false
-    const rolAdministrativo = async (id_usuarioT, nombreCompletoT, administrativo_activoT) => {
-        id_usuario = id_usuarioT
-        nombreCompleto = nombreCompletoT
-        administrativo_activo = administrativo_activoT
-        modRolAdministrativo = true
-    }
-
-    const resRolAdministrativo = async (data) => {
-        modRolAdministrativo = false
-        if (data == 'save'){
-            try {
-                spinner = true
-                const rs = await axios.post(Lugar.backend+'actualizar_rol_administrativo.php',{
-                    id_usuario: id_usuario,
-                    administrativo_activo: administrativo_activo,
-                })
-                spinner = false
-            } catch (e) {}
-            main()
-        }
-	}
-    // ROL DOCENTE
-    let docente_activo = false
-    let modRolDocente = false
-    const rolDocente = async (id_usuarioT, nombreCompletoT, docente_activoT) => {
-        id_usuario = id_usuarioT
-        nombreCompleto = nombreCompletoT
-        docente_activo = docente_activoT
-        modRolDocente = true
-    }
-
-    const resRolDocente = async (data) => {
-        modRolDocente = false
-        if (data == 'save'){
-            try {
-                spinner = true
-                const rs = await axios.post(Lugar.backend+'actualizar_rol_docente.php',{
-                    id_usuario: id_usuario,
-                    docente_activo: docente_activo,
-                })
-                spinner = false
-            } catch (e) {}
-            main()
-        }
-	}
-    // ROL ESTUDIANTE
-    let estudiante_activo = false
-    let modRolEstudiante = false
-    const rolEstudiante = async (id_usuarioT, nombreCompletoT, estudiante_activoT) => {
-        id_usuario = id_usuarioT
-        nombreCompleto = nombreCompletoT
-        estudiante_activo = estudiante_activoT
-        modRolEstudiante = true
-    }
-
-    const resRolEstudiante = async (data) => {
-        modRolEstudiante = false
-        if (data == 'save'){
-            try {
-                spinner = true
-                const rs = await axios.post(Lugar.backend+'actualizar_rol_estudiante.php',{
-                    id_usuario: id_usuario,
-                    estudiante_activo: estudiante_activo,
-                })
-                spinner = false
-            } catch (e) {}
-            main()
-        }
-	}
-
-    // PERFILES DEL USUARIO
-    const perfilesUsuario = async (id_usuarioT, nombreCompletoT) => {
-        sessionStorage.setItem( 'id_usuario_t', id_usuarioT )
-        sessionStorage.setItem( 'nombreCompleto_t', nombreCompletoT)
-        push( '/PerfilesUsuario' )
-    }
-
-
-
     // FUNCIONES GENERALES
     const limpiarFiltro = () => {
         filtro = ''
         main()
-    }
-
-    const zeroFill = (num,largo) => {
-        let zero = '0'
-        num = num.toString()
-        let numl = num.length
-        return zero.repeat(largo-numl)+num
-    }
-
-    const numerosSinCero = (string) => {
-        let out = '';
-        let filtro = '123456789';
-        for (let i=0; i<string.length; i++)
-        if (filtro.indexOf(string.charAt(i)) != -1) 
-            out += string.charAt(i);
-        return out
-    }
-
-    const autogenerar = (cadena, largo) => {
-        let auto = ''
-        while (auto.length < largo) {
-            let char = Math.floor(Math.random() * cadena.length + 1)
-            auto += cadena.charAt(char)
-        }
-        return auto
-    }
-
-    // LOGEO
-    const logeo = (unixTime) => {
-        if ( unixTime == 0 ) {
-            return 'Nunca'
-        } else {
-            let date = new Date(unixTime)
-            return zeroFill(date.getDate(),2)+'/'+zeroFill(date.getMonth()+1,2)+'/'+date.getFullYear()+' '+zeroFill(date.getHours(),2)+':'+zeroFill(date.getMinutes(),2)
-        }
     }
 
     // DEBUG
@@ -491,12 +297,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Acciones</th>
                         <th scope="col">Nombre completo</th>
-                        <th class="text-center" scope="col">Roles</th>
                         <th scope="col">Correo electrónico</th>
-                        <th class="text-center" scope="col">Debe cambiar clave</th>
-                        <th class="text-center" scope="col">Bloqueado</th>
-                        <th class="text-center" scope="col">Código temporal</th>
-                        <th class="text-center" scope="col">Logeo</th>
                     </tr>
                 </thead>
                 <tbody >
@@ -516,14 +317,6 @@
                                                 on:click={()=>editarRegistro(registro.id_usuario,registro.nombres,registro.primer_apellido,registro.segundo_apellido,registro.correo,registro.codigo)}>
                                             </i>
                                             <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <i class="bi bi-key text-primary pointer" 
-                                                data-bs-toggle="tooltip" 
-                                                data-bs-placement="right" 
-                                                title="Cambiar clave de acceso" 
-                                                style="font-size:large;"
-                                                on:click={()=>cambiarClave(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
-                                            </i>
-                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
                                             <i class="bi bi-trash text-danger pointer" 
                                                 data-bs-toggle="tooltip" 
                                                 data-bs-placement="right" 
@@ -531,65 +324,10 @@
                                                 style="font-size:large;"
                                                 on:click={()=>eliminarUsuario(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
                                             </i>
-                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <i class="bi bi-person-lines-fill text-success pointer" 
-                                                data-bs-toggle="tooltip" 
-                                                data-bs-placement="right" 
-                                                title="Perfiles de usuario" 
-                                                style="font-size:large;"
-                                                on:click={()=>perfilesUsuario(registro.id_usuario, registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido)}>
-                                            </i>
                                         </div>
                                     </th>
                                     <td >{registro.nombres} {registro.primer_apellido} {registro.segundo_apellido}</td>
-                                    <td class="text-center pointer">
-                                        {#each rsRoles as rol, i}
-                                            {#if registro.id_usuario == rol.id_usuario}
-                                                <img src="/public/{rol.administrativo}" alt="" style="height:.9rem;" 
-                                                    data-bs-toggle="tooltip" data-bs-placement="right" title="Administrativo" 
-                                                    on:keydown={null} on:click={()=>
-                                                    rolAdministrativo(
-                                                        registro.id_usuario, 
-                                                        registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido,
-                                                        rol.administrativo_activo
-                                                    )}
-                                                >
-                                                <img src="/public/{rol.docente}" alt="" style="height:.9rem;" 
-                                                    data-bs-toggle="tooltip" data-bs-placement="right" title="Docente"
-                                                    on:keydown={null} on:click={()=>
-                                                    rolDocente(
-                                                        registro.id_usuario, 
-                                                        registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido,
-                                                        rol.docente_activo
-                                                    )}
-                                                >
-                                                <img src="/public/{rol.estudiante}" alt="" style="height:.9rem;" 
-                                                    data-bs-toggle="tooltip" data-bs-placement="right" title="Estudiante"
-                                                    on:keydown={null} on:click={()=>
-                                                    rolEstudiante(
-                                                        registro.id_usuario, 
-                                                        registro.nombres+' '+registro.primer_apellido+' '+registro.segundo_apellido,
-                                                        rol.estudiante_activo
-                                                    )}
-                                                >
-                                            {/if}
-                                        {/each}
-                                    </td>
                                     <td >{registro.correo}</td>
-                                    <td class="debeCambiarClave">
-                                        <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.cambiar_clave}
-                                            on:change={()=>cambiarCambiar_Clave(registro.id_usuario,registro.cambiar_clave)}>
-                                        </div>
-                                    </td>
-                                    <td class="bloqueado">
-                                        <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" role="switch" bind:checked={registro.bloqueo}
-                                            on:change={()=>cambiarBloqueo(registro.id_usuario,registro.bloqueo)}>
-                                        </div>
-                                    </td>
-                                    <td class="codigoTemporal text-center">{registro.codigo}</td>
-                                    <td class="text-center">{logeo(registro.hora_unix)}</td>
                                 </tr>   
                             {/if}
                         {/each}
@@ -657,21 +395,6 @@
             <span class="input-group-text"><strong>Correo electrónico:*</strong></span>
             <input type="text" class="form-control {correoValido ? 'is-valid' : 'is-invalid'}" bind:value={correo} on:input={validarCorreo}>
         </div>
-        <div class="input-group mb-1">
-            <span class="input-group-text"><strong>Código temporal:</strong></span>
-            <input type="text" class="form-control {codigoValido ? 'is-valid' : 'is-invalid'}" bind:value={codigo} on:input={validarCodigo}>
-            <button class="btn btn-outline-secondary" on:click={()=>codigo = autogenerar('123456789',6)}>Autogenerar</button>
-        </div>
-    </Modal>
-
-    <Modal open={modCambiarClave} onClosed={(data) => resCambiarClave(data)}
-        title="Cambiar clave: ({nombreCompleto})" 
-        saveButtonText="Guardar" 
-        closeButtonText="Cancelar">
-        <div class="input-group mb-1">
-            <span class="input-group-text"><strong>Nueva clave:*</strong></span>
-            <input type="text" class="form-control" bind:value={clave} on:input={validarClave}>
-        </div>
     </Modal>
     
     <Modal open={modEliminarUsuario} onClosed={(data) => resEliminarUsuario(data)}
@@ -683,45 +406,12 @@
         </div>
     </Modal>
 
-    <Modal open={modRolAdministrativo} onClosed={(data) => resRolAdministrativo(data)}
-        title="Roles de usuario: ({nombreCompleto})" 
-        saveButtonText="Cambiar Rol" 
-        closeButtonText="Cancelar">
-        {#if administrativo_activo }
-             <h5 class="text-center">¿Quieres que {nombreCompleto} deje de ser Administrativo?</h5>
-        {:else}
-             <h5 class="text-center">¿Quieres que {nombreCompleto} sea Administrativo?</h5>
-        {/if}
-    </Modal>
-
-    <Modal open={modRolDocente} onClosed={(data) => resRolDocente(data)}
-        title="Roles de usuario: ({nombreCompleto})" 
-        saveButtonText="Cambiar Rol" 
-        closeButtonText="Cancelar">
-        {#if docente_activo }
-             <h5 class="text-center">¿Quieres que {nombreCompleto} deje de ser Docente?</h5>
-        {:else}
-             <h5 class="text-center">¿Quieres que {nombreCompleto} sea Docente?</h5>
-        {/if}
-    </Modal>
-
-    <Modal open={modRolEstudiante} onClosed={(data) => resRolEstudiante(data)}
-        title="Roles de usuario: ({nombreCompleto})" 
-        saveButtonText="Cambiar Rol" 
-        closeButtonText="Cancelar">
-        {#if estudiante_activo }
-             <h5 class="text-center">¿Quieres que {nombreCompleto} deje de ser Estudiante?</h5>
-        {:else}
-             <h5 class="text-center">¿Quieres que {nombreCompleto} sea Estudiante?</h5>
-        {/if}
-    </Modal>
-
     <!-- DEBUG -->
     {#if debug}
         <div class="debug">
             <div class="input-group mb-3">
-                <span class="input-group-text">codigoValido</span>
-                <input type="text" class="form-control" bind:value={codigoValido}>
+                <span class="input-group-text">debug</span>
+                <input type="text" class="form-control" bind:value={debug}>
             </div>
         </div>
     {/if}
@@ -729,15 +419,6 @@
 </main>
 
 <style>
-    .bloqueado {
-        width: 100px;
-    }
-    .debeCambiarClave {
-        width: 100px;
-    }
-    .codigoTemporal {
-        width: 100px;
-    }
     .navs {
         display: grid;
     }
